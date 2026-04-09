@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Department Dashboard | Medixa</title>
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-vial"></i> <span id="deptName">Test Department</span></h3>
+        </div>
+        
+        <ul class="sidebar-nav">
+            <li><a href="test-records.html" class="active">
+                <i class="fas fa-list"></i> Patient Records
+            </a></li>
+        </ul>
+        
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <strong id="userName">User Name</strong>
+            </div>
+            <a href="login.html" class="btn btn-secondary btn-block btn-small">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
+            </a>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <a href="../../index.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+        
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-tachometer-alt"></i> Test Department Dashboard
+            </div>
+            <p style="font-size: 13px; color: var(--text-secondary);">
+                Welcome! Patient records will appear here automatically when billing status is set to "Paid".
+            </p>
+        </div>
+    </div>
+    
+    <script src="../../assets/js/main.js"></script>
+    <script>
+        const deptName = localStorage.getItem('department_name') || 'Test Department';
+        const userName = localStorage.getItem('test_user_name') || 'User';
+        document.getElementById('deptName').textContent = deptName;
+        document.getElementById('userName').textContent = userName;
+    </script>
+</body>
+</html>
+

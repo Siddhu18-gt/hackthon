@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nurse Management | Medixa</title>
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-shield-alt"></i> Receptionists</h3>
+        </div>
+        
+        <ul class="sidebar-nav">
+            <li><a href="patient-management.html">
+                <i class="fas fa-users"></i> Patient Management
+            </a></li>
+            <li><a href="doctor-management.html">
+                <i class="fas fa-user-md"></i> Doctor Management
+            </a></li>
+            <li><a href="nurse-management.html" class="active">
+                <i class="fas fa-user-nurse"></i> Nurse Management
+            </a></li>
+            <li><a href="billing.html">
+                <i class="fas fa-file-invoice-dollar"></i> Billing
+            </a></li>
+        </ul>
+        
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <strong id="userName">User Name</strong>
+            </div>
+            <a href="login.html" class="btn btn-secondary btn-block btn-small">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
+            </a>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <a href="dashboard.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+        
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-user-nurse"></i> Nurse Registration
+            </div>
+            
+            <div id="message-container"></div>
+            
+            <form id="nurseRegisterForm">
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-id-card"></i> Aadhaar Number</label>
+                    <input type="text" class="form-input" name="aadhaar" id="nurseAadhaarInput" data-aadhaar placeholder="XXXX XXXX XXXX" maxlength="14" required onblur="fetchAadhaarForNurse()">
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-user"></i> Nurse Name</label>
+                    <input type="text" class="form-input" name="nurse_name" id="nurseNameInput" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-calendar"></i> Date of Birth</label>
+                    <input type="date" class="form-input" name="date_of_birth" id="nurseDobInput" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-venus-mars"></i> Gender</label>
+                    <input type="text" class="form-input" name="gender" id="nurseGenderInput" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-map-marker-alt"></i> Address</label>
+                    <textarea class="form-input" name="address" id="nurseAddressInput" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-envelope"></i> Email</label>
+                    <input type="email" class="form-input" name="email" id="nurseEmailInput" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-mobile-alt"></i> Mobile Number</label>
+                    <input type="tel" class="form-input" name="mobile" id="nurseMobileInput" maxlength="10" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-lock"></i> Create Password</label>
+                    <input type="password" class="form-input" name="password" id="nursePasswordInput" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-lock"></i> Confirm Password</label>
+                    <input type="password" class="form-input" name="confirm_password" id="nurseConfirmPasswordInput" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-user-plus"></i> Register Nurse
+                </button>
+            </form>
+        </div>
+        
+        <div class="card mt-20">
+            <div class="card-header">
+                <i class="fas fa-list"></i> Registered Nurses
+            </div>
+            <div id="nursesList" class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Aadhaar</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Mobile</th>
+                        </tr>
+                    </thead>
+                    <tbody id="nursesTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <script src="../../assets/js/main.js"></script>
+    <script>
+        const userName = localStorage.getItem('receptionist_name') || 'User';
+        document.getElementById('userName').textContent = userName;
+
+        async function fetchAadhaarForNurse() {
+            const aadhaar = document.getElementById('nurseAadhaarInput').value.replace(/\D/g, '');
+            if (aadhaar.length !== 12) return;
+
+            try {
+                const response = await fetch('../../api/fetch_aadhaar.php', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({aadhaar})
+                });
+                const responseText = await response.text();
+                let result;
+                try {
+                    result = JSON.parse(responseText);
+                } catch (parseError) {
+                    console.error('Invalid Aadhaar JSON response:', responseText);
+                    showError('Aadhaar service returned an invalid response. Please try again.');
+                    return;
+                }
+                if (result.success && result.data) {
+                    document.getElementById('nurseNameInput').value = result.data.name || '';
+                    document.getElementById('nurseDobInput').value = result.data.date_of_birth || '';
+                    document.getElementById('nurseGenderInput').value = result.data.gender || '';
+                    document.getElementById('nurseAddressInput').value = result.data.address || '';
+                    document.getElementById('nurseMobileInput').value = result.data.mobile_number || '';
+                }
+            } catch (error) {
+                console.error('Aadhaar fetch error:', error);
+            }
+        }
+
+        document.getElementById('nurseRegisterForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const password = document.getElementById('nursePasswordInput').value;
+            const confirmPassword = document.getElementById('nurseConfirmPasswordInput').value;
+            if (password !== confirmPassword) {
+                showError('Passwords do not match');
+                return;
+            }
+
+            const data = {
+                aadhaar: document.getElementById('nurseAadhaarInput').value,
+                nurse_name: document.getElementById('nurseNameInput').value,
+                date_of_birth: document.getElementById('nurseDobInput').value,
+                gender: document.getElementById('nurseGenderInput').value,
+                address: document.getElementById('nurseAddressInput').value,
+                email: document.getElementById('nurseEmailInput').value,
+                mobile: document.getElementById('nurseMobileInput').value,
+                password: password,
+                confirm_password: confirmPassword
+            };
+
+            try {
+                const response = await fetch('../../api/register_nurse.php', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showSuccess('Nurse registered successfully');
+                    this.reset();
+                    loadNurses();
+                } else {
+                    showError(result.message || 'Registration failed');
+                }
+            } catch (error) {
+                showError('Network error. Please try again.');
+                console.error('Nurse registration error:', error);
+            }
+        });
+
+        async function loadNurses() {
+            try {
+                const response = await fetch('../../api/get_nurses.php');
+                const result = await response.json();
+                const tbody = document.getElementById('nursesTableBody');
+                tbody.innerHTML = '';
+                if (result.success && Array.isArray(result.nurses)) {
+                    result.nurses.forEach(nurse => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${nurse.aadhaar_number || 'N/A'}</td>
+                            <td>${nurse.nurse_name}</td>
+                            <td>${nurse.email}</td>
+                            <td>${nurse.mobile_number || 'N/A'}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading nurses:', error);
+            }
+        }
+
+        loadNurses();
+    </script>
+</body>
+</html>

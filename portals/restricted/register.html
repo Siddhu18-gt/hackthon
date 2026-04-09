@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receptionist Registration | Medixa</title>
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/portal-modern.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="portal-body">
+    <div class="portal-wrapper registration-card">
+        <a href="login.html" class="portal-back">
+            <i class="fas fa-arrow-left"></i> Back to Login
+        </a>
+        
+        <div class="portal-card">
+            <div class="portal-header">
+                <div class="portal-logo">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <h2 class="portal-title">Join Medixa</h2>
+                <p class="portal-subtitle">Create a receptionist account for your hospital.</p>
+            </div>
+            
+            <div id="message-container"></div>
+            
+            <form id="registerForm" class="portal-form">
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-id-card"></i> Aadhaar Number
+                        </label>
+                        <input type="text" class="form-input" name="aadhaar" id="receptionistAadhaarInput" data-aadhaar placeholder="XXXX XXXX XXXX" maxlength="14" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-hospital"></i> Hospital Name
+                        </label>
+                        <input type="text" class="form-input" name="hospital_name" placeholder="City Hospital" required>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-user"></i> Full Name
+                        </label>
+                        <input type="text" class="form-input" name="receptionist_name" id="receptionistNameInput" placeholder="John Doe" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-calendar"></i> Date of Birth
+                        </label>
+                        <input type="date" class="form-input" name="date_of_birth" id="receptionistDobInput" required>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-venus-mars"></i> Gender
+                        </label>
+                        <input type="text" class="form-input" name="gender" id="receptionistGenderInput" placeholder="Male/Female" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-mobile-alt"></i> Mobile
+                        </label>
+                        <input type="tel" class="form-input" name="mobile" id="receptionistMobileInput" maxlength="10" placeholder="9876543210" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-map-marker-alt"></i> Address
+                    </label>
+                    <textarea class="form-input" name="address" id="receptionistAddressInput" rows="2" placeholder="Full address details..." required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-envelope"></i> Professional Email
+                    </label>
+                    <input type="email" class="form-input" name="email" placeholder="john.doe@hospital.com" required>
+                </div>
+                
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-lock"></i> Password
+                        </label>
+                        <input type="password" class="form-input" name="password" placeholder="••••••••" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-lock"></i> Confirm
+                        </label>
+                        <input type="password" class="form-input" name="confirm_password" placeholder="••••••••" required>
+                    </div>
+                </div>
+                
+                <button type="submit" class="portal-btn">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </button>
+            </form>
+            
+            <div class="portal-footer">
+                <p>Already have an account? <a href="login.html">Login here</a></p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="../../assets/js/main.js"></script>
+    <script src="../../assets/js/restricted.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Report | Medixa</title>
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-user-injured"></i> Patient</h3>
+        </div>
+        
+        <ul class="sidebar-nav">
+            <li><a href="patient-report.html" class="active">
+                <i class="fas fa-file-medical"></i> Patient Report
+            </a></li>
+            <li><a href="billing.html">
+                <i class="fas fa-file-invoice-dollar"></i> Billing
+            </a></li>
+        </ul>
+        
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <strong id="patientName">Patient Name</strong>
+            </div>
+            <a href="login.html" class="btn btn-secondary btn-block btn-small">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
+            </a>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <a href="dashboard.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+        
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-file-medical"></i> Patient Final Report
+            </div>
+            
+            <div id="reportContent">
+                <div class="patient-details-card">
+                    <h4><i class="fas fa-user"></i> Patient Details</h4>
+                    <div id="patientReportDetails"></div>
+                </div>
+                
+                <hr style="border: 1px solid var(--border-color); margin: 20px 0;">
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <h4 style="font-size: 14px; color: var(--primary-color); margin-bottom: 15px;">
+                            <i class="fas fa-file-alt"></i> Summary
+                        </h4>
+                        <div id="summaryContent" style="background: var(--bg-dark); padding: 15px; border-radius: 6px; font-size: 12px; color: var(--text-secondary); line-height: 1.8; white-space: pre-wrap;">
+                            Loading...
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 style="font-size: 14px; color: var(--primary-color); margin-bottom: 15px;">
+                            <i class="fas fa-pills"></i> Medicines
+                        </h4>
+                        <div id="medicinesContent" style="background: var(--bg-dark); padding: 15px; border-radius: 6px; font-size: 12px; color: var(--text-secondary); line-height: 1.8;">
+                            Loading...
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <button class="btn btn-primary" onclick="downloadReport()">
+                        <i class="fas fa-download"></i> Download Report
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="../../assets/js/main.js"></script>
+    <script>
+        const patient = JSON.parse(localStorage.getItem('current_patient') || '{}');
+        const patientName = patient.name || 'Patient';
+        document.getElementById('patientName').textContent = patientName;
+        
+        // Load patient report
+        loadPatientReport();
+        
+        async function loadPatientReport() {
+            if (!patient.id) {
+                showError('Patient not found');
+                return;
+            }
+            
+            // Display patient details
+            const container = document.getElementById('patientReportDetails');
+            const photoPath = patient.photo_path ? `../../${patient.photo_path}` : null;
+            const photoHtml = photoPath ? `<img src="${photoPath}" alt="Patient Photo" class="patient-photo" onerror="this.style.display='none'">` : '';
+            
+            container.innerHTML = `
+                ${photoHtml}
+                <div class="detail-row">
+                    <span class="detail-label">Name:</span>
+                    <span class="detail-value">${patient.name}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Aadhaar:</span>
+                    <span class="detail-value">${formatAadhaar(patient.aadhaar_number)}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Date of Birth:</span>
+                    <span class="detail-value">${formatDate(patient.date_of_birth)}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Age:</span>
+                    <span class="detail-value">${patient.age ? `${patient.age} years` : 'N/A'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Gender:</span>
+                    <span class="detail-value">${patient.gender || 'N/A'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Address:</span>
+                    <span class="detail-value">${patient.address || 'N/A'}</span>
+                </div>
+                ${patient.cause ? `
+                <div class="detail-row">
+                    <span class="detail-label">Cause:</span>
+                    <span class="detail-value">${patient.cause}</span>
+                </div>
+                ` : ''}
+            `;
+            
+            // Load report data
+            try {
+                const response = await fetch(`../../api/get_patient_report.php?patient_id=${patient.id}`);
+                const result = await response.json();
+                
+                if (result.success && result.report) {
+                    document.getElementById('summaryContent').textContent = result.report.summary || 'No summary available.';
+                    document.getElementById('medicinesContent').textContent = result.report.medicines || 'No medicines prescribed.';
+                } else {
+                    document.getElementById('summaryContent').textContent = 'No report available yet.';
+                    document.getElementById('medicinesContent').textContent = 'No medicines prescribed yet.';
+                }
+            } catch (error) {
+                console.error('Error loading report:', error);
+                showError('Failed to load report');
+            }
+        }
+        
+        function downloadReport() {
+            const summary = document.getElementById('summaryContent').textContent;
+            const medicines = document.getElementById('medicinesContent').textContent;
+            
+            const content = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Patient Report - ${patient.name}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; }
+                        h2 { color: #00e6ac; }
+                        .patient-info { margin: 20px 0; }
+                        .two-column { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
+                        .summary, .medicines { padding: 15px; border: 1px solid #ddd; border-radius: 6px; }
+                    </style>
+                </head>
+                <body>
+                    <h2>Medixa Healthcare - Patient Final Report</h2>
+                    <div class="patient-info">
+                        <p><strong>Name:</strong> ${patient.name}</p>
+                        <p><strong>Aadhaar:</strong> ${formatAadhaar(patient.aadhaar_number)}</p>
+                        <p><strong>Age:</strong> ${patient.age ? `${patient.age} years` : 'N/A'} | <strong>Gender:</strong> ${patient.gender || 'N/A'}</p>
+                        <p><strong>Address:</strong> ${patient.address || 'N/A'}</p>
+                        ${patient.cause ? `<p><strong>Cause:</strong> ${patient.cause}</p>` : ''}
+                    </div>
+                    <div class="two-column">
+                        <div class="summary">
+                            <h3>Summary</h3>
+                            <p>${summary}</p>
+                        </div>
+                        <div class="medicines">
+                            <h3>Medicines</h3>
+                            <p>${medicines}</p>
+                        </div>
+                    </div>
+                    <p style="margin-top: 30px;"><em>Generated on ${new Date().toLocaleString()}</em></p>
+                </body>
+                </html>
+            `;
+            
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(content);
+            printWindow.document.close();
+            printWindow.print();
+        }
+    </script>
+</body>
+</html>
+

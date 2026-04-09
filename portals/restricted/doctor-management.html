@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Management | Medixa</title>
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-shield-alt"></i> Receptionists</h3>
+        </div>
+        
+        <ul class="sidebar-nav">
+            <li><a href="patient-management.html">
+                <i class="fas fa-users"></i> Patient Management
+            </a></li>
+            <li><a href="doctor-management.html" class="active">
+                <i class="fas fa-user-md"></i> Doctor Management
+            </a></li>
+            <li><a href="nurse-management.html">
+                <i class="fas fa-user-nurse"></i> Nurse Management
+            </a></li>
+            <li><a href="billing.html">
+                <i class="fas fa-file-invoice-dollar"></i> Billing
+            </a></li>
+        </ul>
+        
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <strong id="userName">User Name</strong>
+            </div>
+            <a href="login.html" class="btn btn-secondary btn-block btn-small">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
+            </a>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <a href="dashboard.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+        
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-user-md"></i> Doctor Registration
+            </div>
+            
+            <div id="message-container"></div>
+            
+            <form id="doctorRegisterForm">
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-user"></i> Doctor Name
+                    </label>
+                    <input type="text" class="form-input" name="doctor_name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-id-card"></i> Doctor ID
+                    </label>
+                    <input type="text" class="form-input" name="doctor_id" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-id-card"></i> Aadhaar Number
+                    </label>
+                    <input type="text" class="form-input" name="aadhaar" id="doctorAadhaarInput" data-aadhaar placeholder="XXXX XXXX XXXX" maxlength="14" required onblur="fetchAadhaarForDoctor()">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-user"></i> Doctor Name
+                    </label>
+                    <input type="text" class="form-input" name="doctor_name" id="doctorNameInput" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-id-badge"></i> Doctor ID
+                    </label>
+                    <input type="text" class="form-input" name="doctor_id" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-envelope"></i> Email
+                    </label>
+                    <input type="email" class="form-input" name="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-lock"></i> Create Password
+                    </label>
+                    <input type="password" class="form-input" name="password" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-lock"></i> Confirm Password
+                    </label>
+                    <input type="password" class="form-input" name="confirm_password" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-stethoscope"></i> Specialization
+                    </label>
+                    <select class="form-select" name="specialization" required>
+                        <option value="">Select Specialization</option>
+                        <option value="Cardiology">Cardiology</option>
+                        <option value="Neurology">Neurology</option>
+                        <option value="Orthopedics">Orthopedics</option>
+                        <option value="Pediatrics">Pediatrics</option>
+                        <option value="Dermatology">Dermatology</option>
+                        <option value="Ophthalmology">Ophthalmology</option>
+                        <option value="ENT">ENT</option>
+                        <option value="General Medicine">General Medicine</option>
+                        <option value="Gynecology">Gynecology</option>
+                        <option value="Psychiatry">Psychiatry</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-calendar"></i> Date of Birth
+                    </label>
+                    <input type="date" class="form-input" name="date_of_birth" id="doctorDobInput" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-venus-mars"></i> Gender
+                    </label>
+                    <input type="text" class="form-input" name="gender" id="doctorGenderInput" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-map-marker-alt"></i> Address
+                    </label>
+                    <textarea class="form-input" name="address" id="doctorAddressInput" rows="3" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-mobile-alt"></i> Mobile Number
+                    </label>
+                    <input type="tel" class="form-input" name="mobile" id="doctorMobileInput" maxlength="10" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-user-plus"></i> Register Doctor
+                </button>
+            </form>
+        </div>
+        
+        <!-- Existing Doctors List -->
+        <div class="card mt-20">
+            <div class="card-header">
+                <i class="fas fa-list"></i> Registered Doctors
+            </div>
+            <div id="doctorsList" class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Doctor ID</th>
+                            <th>Name</th>
+                            <th>Specialization</th>
+                            <th>Email</th>
+                        </tr>
+                    </thead>
+                    <tbody id="doctorsTableBody">
+                        <!-- Doctors will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <script src="../../assets/js/main.js"></script>
+    <script>
+        const userName = localStorage.getItem('receptionist_name') || 'User';
+        document.getElementById('userName').textContent = userName;
+        
+        // Load existing doctors
+        loadDoctors();
+        
+        // Doctor Registration Form
+        async function fetchAadhaarForDoctor() {
+            const aadhaarInput = document.getElementById('doctorAadhaarInput');
+            const aadhaar = getCleanAadhaar(aadhaarInput.value);
+            if (aadhaar.length !== 12) return;
+
+            try {
+                const response = await fetch('../../api/fetch_aadhaar.php', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({aadhaar})
+                });
+                const responseText = await response.text();
+                let result;
+                try {
+                    result = JSON.parse(responseText);
+                } catch (parseError) {
+                    console.error('Invalid Aadhaar JSON response:', responseText);
+                    showError('Aadhaar service returned an invalid response. Please try again.');
+                    return;
+                }
+                if (result.success && result.data) {
+                    document.getElementById('doctorNameInput').value = result.data.name || '';
+                    document.getElementById('doctorDobInput').value = result.data.date_of_birth || '';
+                    document.getElementById('doctorGenderInput').value = result.data.gender || '';
+                    document.getElementById('doctorAddressInput').value = result.data.address || '';
+                    document.getElementById('doctorMobileInput').value = result.data.mobile_number || '';
+                }
+            } catch (error) {
+                console.error('Aadhaar fetch error:', error);
+            }
+        }
+
+        document.getElementById('doctorRegisterForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const password = formData.get('password');
+            const confirmPassword = formData.get('confirm_password');
+            
+            if (password !== confirmPassword) {
+                showError('Passwords do not match');
+                return;
+            }
+            
+            const data = {
+                doctor_name: formData.get('doctor_name'),
+                doctor_id: formData.get('doctor_id'),
+                email: formData.get('email'),
+                password: password,
+                specialization: formData.get('specialization'),
+                aadhaar: formData.get('aadhaar'),
+                date_of_birth: formData.get('date_of_birth'),
+                gender: formData.get('gender'),
+                address: formData.get('address'),
+                mobile: formData.get('mobile')
+            };
+            
+            try {
+                const response = await fetch('../../api/register_doctor.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showSuccess('Doctor registered successfully!');
+                    this.reset();
+                    loadDoctors();
+                } else {
+                    showError(result.message || 'Registration failed');
+                }
+            } catch (error) {
+                showError('Network error. Please try again.');
+                console.error('Doctor registration error:', error);
+            }
+        });
+        
+        async function loadDoctors() {
+            try {
+                const response = await fetch('../../api/get_doctors.php');
+                const result = await response.json();
+                
+                const tbody = document.getElementById('doctorsTableBody');
+                tbody.innerHTML = '';
+                
+                if (result.success && result.doctors) {
+                    result.doctors.forEach(doctor => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${doctor.doctor_id}</td>
+                            <td>${doctor.doctor_name}</td>
+                            <td>${doctor.specialization}</td>
+                            <td>${doctor.email}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading doctors:', error);
+            }
+        }
+    </script>
+</body>
+</html>
+

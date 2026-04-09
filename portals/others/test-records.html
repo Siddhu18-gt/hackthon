@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Records | Medixa</title>
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-vial"></i> <span id="deptName">Test Department</span></h3>
+        </div>
+        
+        <ul class="sidebar-nav">
+            <li><a href="test-records.html" class="active">
+                <i class="fas fa-list"></i> Patient Records
+            </a></li>
+        </ul>
+        
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <strong id="userName">User Name</strong>
+            </div>
+            <a href="login.html" class="btn btn-secondary btn-block btn-small">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
+            </a>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <a href="test-dashboard.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+        
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-list"></i> Patient Records
+            </div>
+            
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">
+                <i class="fas fa-info-circle"></i> Records appear automatically when billing status is set to "Paid"
+            </p>
+            
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Serial No.</th>
+                            <th>Name</th>
+                            <th>Aadhaar Number</th>
+                            <th>Age</th>
+                            <th>Test Name</th>
+                            <th>Upload</th>
+                        </tr>
+                    </thead>
+                    <tbody id="testRecordsTable">
+                        <tr>
+                            <td colspan="6" style="text-align: center; color: var(--text-muted);">
+                                Loading records...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Upload Modal -->
+    <div id="uploadModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000;">
+        <div style="background: white; margin: 50px auto; padding: 30px; max-width: 500px; border-radius: 8px; color: #333;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="color: var(--primary-color);">Upload Test Report</h3>
+                <button class="btn btn-secondary btn-small" onclick="closeUploadModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="uploadForm">
+                <input type="hidden" id="uploadRecordId">
+                <div class="form-group">
+                    <label class="form-label">Select Report File (PDF/Image)</label>
+                    <input type="file" class="form-input" id="reportFile" accept=".pdf,.jpg,.jpeg,.png" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-upload"></i> Upload
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <script src="../../assets/js/main.js"></script>
+    <script src="../../assets/js/others.js"></script>
+    <script>
+        const deptName = localStorage.getItem('department_name') || 'Test Department';
+        const userName = localStorage.getItem('test_user_name') || 'User';
+        document.getElementById('deptName').textContent = deptName;
+        document.getElementById('userName').textContent = userName;
+        
+        // Load test records
+        loadTestRecords();
+        
+        async function loadTestRecords() {
+            const deptId = localStorage.getItem('test_department_id');
+            if (!deptId) {
+                showError('Department not found');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`../../api/get_test_records.php?department_id=${deptId}`);
+                const result = await response.json();
+                
+                const tbody = document.getElementById('testRecordsTable');
+                tbody.innerHTML = '';
+                
+                if (result.success && result.records && result.records.length > 0) {
+                    result.records.forEach((record, index) => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${index + 1}</td>
+                            <td>${record.patient_name}</td>
+                            <td>${formatAadhaar(record.aadhaar_number)}</td>
+                            <td>${record.age}</td>
+                            <td>${record.test_name}</td>
+                            <td>
+                                ${record.report_file_path ? `
+                                    <span style="color: var(--success); font-size: 11px;">
+                                        <i class="fas fa-check"></i> Uploaded
+                                    </span>
+                                ` : `
+                                    <button class="btn btn-primary btn-small" onclick="openUploadModal(${record.id})">
+                                        <i class="fas fa-upload"></i> Upload
+                                    </button>
+                                `}
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                } else {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="6" style="text-align: center; color: var(--text-muted);">
+                                No records available. Records will appear when billing status is set to "Paid".
+                            </td>
+                        </tr>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading records:', error);
+                showError('Failed to load records');
+            }
+        }
+        
+        function openUploadModal(recordId) {
+            document.getElementById('uploadRecordId').value = recordId;
+            document.getElementById('uploadModal').style.display = 'block';
+        }
+        
+        function closeUploadModal() {
+            document.getElementById('uploadModal').style.display = 'none';
+            document.getElementById('uploadForm').reset();
+        }
+        
+        document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const recordId = document.getElementById('uploadRecordId').value;
+            const fileInput = document.getElementById('reportFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showError('Please select a file');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('record_id', recordId);
+            formData.append('report_file', file);
+            
+            try {
+                const response = await fetch('../../api/upload_test_report.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showSuccess('Report uploaded successfully!');
+                    closeUploadModal();
+                    loadTestRecords();
+                } else {
+                    showError(result.message || 'Upload failed');
+                }
+            } catch (error) {
+                showError('Network error. Please try again.');
+                console.error('Upload error:', error);
+            }
+        });
+        
+        // Close modal on outside click
+        document.getElementById('uploadModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeUploadModal();
+            }
+        });
+    </script>
+</body>
+</html>
+

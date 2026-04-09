@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medixa - Smart Healthcare Management System</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/home.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* Chatbot Widget Styles */
+        .chatbot-widget {
+            position: fixed;
+            bottom: 85px;
+            right: 25px;
+            width: 300px;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+            z-index: 1000;
+            display: none; /* Hidden by default */
+            transition: all 0.3s ease;
+        }
+
+        .chatbot-widget.active {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .chatbot-widget-header {
+            background: #0f766e;
+            color: #fff;
+            padding: 14px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
+
+        .chatbot-widget-header > div:first-child {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chatbot-widget-body {
+            background: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .chatbot-widget-body p {
+            margin-bottom: 20px;
+            color: #475569;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .widget-open-btn {
+            background: #00c896;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            width: 100%;
+            transition: background 0.2s;
+        }
+
+        .widget-open-btn:hover {
+            background: #00a67d;
+        }
+
+        .close-widget-btn {
+            background: transparent;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            font-size: 18px;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+
+        .close-widget-btn:hover {
+            opacity: 1;
+        }
+
+        /* Floating Launcher Icon */
+        .chatbot-launcher {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 50px;
+            height: 50px;
+            background: #0f766e;
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 1001;
+            transition: transform 0.3s, background 0.3s;
+        }
+
+        .chatbot-launcher:hover {
+            transform: scale(1.1);
+            background: #0d9488;
+        }
+
+        .chatbot-launcher i {
+            font-size: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .chatbot-widget {
+                width: calc(100% - 40px);
+                right: 20px;
+                left: 20px;
+                bottom: 85px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar" id="navbar">
+        <div class="container nav-container">
+            <a href="#home" class="logo">
+                <i class="fas fa-hand-holding-medical"></i>
+                <span>Medixa</span>
+            </a>
+            <ul class="nav-menu">
+                <li><a href="#home" class="nav-link active">Home</a></li>
+                <li><a href="#portals" class="nav-link">Portals</a></li>
+                <li><a href="#insights" class="nav-link">Insights</a></li>
+                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section id="home" class="home-section">
+        <div class="container">
+            <div class="welcome-content">
+                <div class="welcome-badge">
+                    <i class="fas fa-sparkles"></i> Smart Healthcare Solution
+                </div>
+                <h1 class="welcome-title">Next-Gen <span>Healthcare</span> Management</h1>
+                <p class="welcome-description">
+                    Medixa provides a secure, paperless, and interconnected ecosystem for hospitals. Streamline your OPD operations and enhance patient care with our modern technology.
+                </p>
+                <div class="hero-btns">
+                    <a href="#portals" class="btn btn-primary">
+                        Get Started <i class="fas fa-arrow-right"></i>
+                    </a>
+                    <a href="#about" class="btn btn-outline">
+                        Learn More
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="stats-section">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <h3>10+</h3>
+                    <p>Specializations</p>
+                </div>
+                <div class="stat-item">
+                    <h3>24/7</h3>
+                    <p>Care Available</p>
+                </div>
+                <div class="stat-item">
+                    <h3>100%</h3>
+                    <p>Paperless System</p>
+                </div>
+                <div class="stat-item">
+                    <h3>Secure</h3>
+                    <p>Data Protection</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="portals" class="section portals-section">
+        <div class="container">
+            <h2 class="section-title">Access Our Portals</h2>
+            <div class="portals-grid">
+                <div class="portal-card" onclick="window.location.href='portals/restricted/login.html'">
+                    <i class="fas fa-concierge-bell"></i>
+                    <h3>Receptionists</h3>
+                    <p>Manage patient intake, Aadhaar verification, and OPD scheduling with ease.</p>
+                    <div class="card-link">Enter Portal <i class="fas fa-chevron-right"></i></div>
+                </div>
+                <div class="portal-card" onclick="window.location.href='portals/doctor/login.html'">
+                    <i class="fas fa-user-md"></i>
+                    <h3>Doctors</h3>
+                    <p>Access patient history, prescribe treatments, and manage consultations digitally.</p>
+                    <div class="card-link">Enter Portal <i class="fas fa-chevron-right"></i></div>
+                </div>
+                <div class="portal-card" onclick="window.location.href='portals/others/login.html'">
+                    <i class="fas fa-microscope"></i>
+                    <h3>Medical Staff</h3>
+                    <p>Dedicated portal for nurses and lab technicians to manage tests and care.</p>
+                    <div class="card-link">Enter Portal <i class="fas fa-chevron-right"></i></div>
+                </div>
+                <div class="portal-card" onclick="window.location.href='portals/patient/login.html'">
+                    <i class="fas fa-heartbeat"></i>
+                    <h3>Patients</h3>
+                    <p>View your reports, billing details, and manage your health records securely.</p>
+                    <div class="card-link">Enter Portal <i class="fas fa-chevron-right"></i></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="insights" class="section insights-section">
+        <div class="container">
+            <h2 class="section-title">Hospital Insights</h2>
+            <div class="insights-grid">
+                <div class="insight-card">
+                    <div class="insight-icon"><i class="fas fa-users"></i></div>
+                    <div class="insight-value" id="insight-patients">0</div>
+                    <div class="insight-label">Total Patients</div>
+                    <div class="growth-positive" id="insight-growth">
+                        <i class="fas fa-arrow-up"></i> 0 new this week
+                    </div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-icon"><i class="fas fa-user-md"></i></div>
+                    <div class="insight-value" id="insight-doctors">0</div>
+                    <div class="insight-label">Doctors Available</div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-icon"><i class="fas fa-wallet"></i></div>
+                    <div class="insight-value" id="insight-revenue">₹0</div>
+                    <div class="insight-label">Business Growth</div>
+                </div>
+            </div>
+
+            <div class="bed-status-container">
+                <div class="bed-visual">
+                    <svg width="180" height="180" viewBox="0 0 180 180">
+                        <circle cx="90" cy="90" r="80" stroke="#1e293b" stroke-width="12" fill="none" />
+                        <circle id="bed-progress" cx="90" cy="90" r="80" stroke="#0d9488" stroke-width="12" fill="none" 
+                                stroke-dasharray="502.65" stroke-dashoffset="502.65" class="bed-progress-ring" />
+                    </svg>
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                        <span id="bed-percent" style="font-size: 28px; font-weight: 800;">0%</span>
+                        <div style="font-size: 10px; color: #94a3b8; text-transform: uppercase;">Occupied</div>
+                    </div>
+                </div>
+                <div class="bed-info">
+                    <h4>Bed Management</h4>
+                    <p style="color: #94a3b8; margin-bottom: 24px;">Real-time tracking of ward availability based on patient admissions.</p>
+                    <div class="bed-stats-row">
+                        <div class="bed-stat-item">
+                            <span>Total Capacity</span>
+                            <strong id="bed-total">100</strong>
+                        </div>
+                        <div class="bed-stat-item">
+                            <span>Currently Occupied</span>
+                            <strong id="bed-occupied">0</strong>
+                        </div>
+                        <div class="bed-stat-item">
+                            <span>Remaining</span>
+                            <strong id="bed-remaining" style="color: #0d9488;">100</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="section about-section">
+        <div class="container">
+            <h2 class="section-title">Why Choose Medixa?</h2>
+            <div class="about-grid">
+                <div class="about-image">
+                    <img src="https://images.unsplash.com/photo-1516549655169-df83a0774514?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80" alt="Medical Technology">
+                </div>
+                <div class="about-text">
+                    <h3>Revolutionizing Hospital Operations</h3>
+                    <p>
+                        Medixa is built by software innovators at S G Balekundri Institute of Technology. We've combined clinical insights with modern engineering to solve the most pressing challenges in OPD management.
+                    </p>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check-circle"></i> Aadhaar-Based KYC</li>
+                        <li><i class="fas fa-check-circle"></i> Real-time Dashboard</li>
+                        <li><i class="fas fa-check-circle"></i> Automated Billing</li>
+                        <li><i class="fas fa-check-circle"></i> Secure E-Records</li>
+                        <li><i class="fas fa-check-circle"></i> Queue Management</li>
+                        <li><i class="fas fa-check-circle"></i> Lab Integration</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="team-section">
+        <div class="container">
+            <h2 class="section-title">The Innovation Team</h2>
+            <div class="team-grid">
+                <div class="team-member">
+                    <div class="member-image"><i class="fas fa-user-astronaut"></i></div>
+                    <h4>Akash</h4>
+                    <p class="member-role">Lead Developer</p>
+                </div>
+                <div class="team-member">
+                    <div class="member-image"><i class="fas fa-user-ninja"></i></div>
+                    <h4>Siddu</h4>
+                    <p class="member-role">Frontend Specialist</p>
+                </div>
+                <div class="team-member">
+                    <div class="member-image"><i class="fas fa-user-tie"></i></div>
+                    <h4>Vaibhav</h4>
+                    <p class="member-role">Backend Engineer</p>
+                </div>
+                <div class="team-member">
+                    <div class="member-image"><i class="fas fa-user-secret"></i></div>
+                    <h4>Vijay</h4>
+                    <p class="member-role">System Architect</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="section contact-section">
+        <div class="container">
+            <div class="contact-card">
+                <div class="contact-info">
+                    <h3>Get in <span>Touch</span></h3>
+                    <p>Have questions about our smart healthcare platform? Our team is here to help you.</p>
+                </div>
+                <ul class="contact-list">
+                    <li class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <h5>Our Location</h5>
+                            <p>S G Balekundri Institute of Technology, Belagavi, Karnataka</p>
+                        </div>
+                    </li>
+                    <li class="contact-item">
+                        <i class="fas fa-envelope-open-text"></i>
+                        <div>
+                            <h5>Email Us</h5>
+                            <p>support@medixa.com</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-logo">
+                <i class="fas fa-hand-holding-medical"></i> Medixa
+            </div>
+            <ul class="footer-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#portals">Portals</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <div class="footer-bottom">
+                &copy; 2026 Medixa. All rights reserved. | SGBIT Belagavi
+            </div>
+        </div>
+    </footer>
+
+    <!-- Chatbot Floating Icon -->
+    <div class="chatbot-launcher" onclick="toggleWidget()" id="chatbotLauncher" title="Chat with Medixa AI">
+        <i class="fas fa-comment-dots"></i>
+    </div>
+
+    <!-- Chatbot Widget Window -->
+    <div id="chatbot-widget" class="chatbot-widget">
+        <div class="chatbot-widget-header">
+            <div>
+                <i class="fas fa-robot"></i>
+                <span>Medixa AI Assistant</span>
+            </div>
+            <button type="button" class="close-widget-btn" onclick="toggleWidget()" title="Close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="chatbot-widget-body">
+            <p>Hello! I'm Medixa AI. How can I assist you today with our healthcare platform?</p>
+            <button class="widget-open-btn" onclick="openMedixaChatbot()">
+                <i class="fas fa-external-link-alt"></i> Launch Full Chatbot
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+            
+            // Active link highlighting
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (window.pageYOffset >= sectionTop - 150) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').includes(current)) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        function openMedixaChatbot() {
+            window.open("https://medixa-assistant.zapier.app", "_blank");
+        }
+
+        // Fetch Hospital Insights
+        async function fetchHospitalInsights() {
+            try {
+                const response = await fetch('api/get_hospital_insights.php');
+                const result = await response.json();
+                
+                if (result.success) {
+                    const m = result.metrics;
+                    document.getElementById('insight-patients').textContent = m.patients;
+                    document.getElementById('insight-doctors').textContent = m.doctors;
+                    document.getElementById('insight-revenue').textContent = '₹' + m.revenue;
+                    document.getElementById('insight-growth').innerHTML = `<i class="fas fa-arrow-up"></i> ${m.growth} new this week`;
+                    
+                    // Bed Management
+                    document.getElementById('bed-total').textContent = m.beds.total;
+                    document.getElementById('bed-occupied').textContent = m.beds.occupied;
+                    document.getElementById('bed-remaining').textContent = m.beds.remaining;
+                    
+                    const percent = Math.round((m.beds.occupied / m.beds.total) * 100);
+                    document.getElementById('bed-percent').textContent = percent + '%';
+                    
+                    // Update SVG Progress Ring
+                    const circle = document.getElementById('bed-progress');
+                    const radius = circle.r.baseVal.value;
+                    const circumference = 2 * Math.PI * radius;
+                    const offset = circumference - (percent / 100) * circumference;
+                    circle.style.strokeDashoffset = offset;
+                }
+            } catch (error) {
+                console.error('Error fetching insights:', error);
+            }
+        }
+
+        // Initialize insights on load
+        fetchHospitalInsights();
+        // Refresh every 30 seconds
+        setInterval(fetchHospitalInsights, 30000);
+
+        function toggleWidget() {
+            const widget = document.getElementById('chatbot-widget');
+            const launcherIcon = document.querySelector('#chatbotLauncher i');
+            
+            widget.classList.toggle('active');
+            
+            // Toggle icon between comment and close
+            if (widget.classList.contains('active')) {
+                launcherIcon.className = 'fas fa-times';
+            } else {
+                launcherIcon.className = 'fas fa-comment-dots';
+            }
+        }
+    </script>
+
+    <script src="assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billing | Medixa</title>
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-shield-alt"></i> Receptionists</h3>
+        </div>
+        
+        <ul class="sidebar-nav">
+            <li><a href="patient-management.html">
+                <i class="fas fa-users"></i> Patient Management
+            </a></li>
+            <li><a href="doctor-management.html">
+                <i class="fas fa-user-md"></i> Doctor Management
+            </a></li>
+            <li><a href="nurse-management.html">
+                <i class="fas fa-user-nurse"></i> Nurse Management
+            </a></li>
+            <li><a href="billing.html" class="active">
+                <i class="fas fa-file-invoice-dollar"></i> Billing
+            </a></li>
+        </ul>
+        
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <strong id="userName">User Name</strong>
+            </div>
+            <a href="login.html" class="btn btn-secondary btn-block btn-small">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
+            </a>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <a href="dashboard.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+        
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-file-invoice-dollar"></i> Billing Management
+            </div>
+            
+            <!-- Patient Selection -->
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-id-card"></i> Enter Patient Aadhaar
+                </label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" class="form-input" id="patientAadhaar" 
+                           data-aadhaar="true" placeholder="XXXX XXXX XXXX" maxlength="14">
+                    <button class="btn btn-primary" onclick="loadPatientBilling()">
+                        <i class="fas fa-search"></i> Load Patient
+                    </button>
+                </div>
+            </div>
+            
+            <div id="message-container"></div>
+            
+            <!-- Patient Details (1/4 A4 Format) -->
+            <div id="patientDetailsSection" style="display: none;">
+                <div class="patient-details-card">
+                    <h4><i class="fas fa-user"></i> Patient Details</h4>
+                    <div id="patientBillingDetails"></div>
+                </div>
+                
+                <hr style="border: 1px solid var(--border-color); margin: 20px 0;">
+                
+                <!-- Billing Table -->
+                <div>
+                    <h4 style="font-size: 14px; color: var(--primary-color); margin-bottom: 15px;">
+                        <i class="fas fa-list"></i> Tests
+                    </h4>
+                    <div class="table-container">
+                        <table class="table" id="billingTable">
+                            <thead>
+                                <tr>
+                                    <th>Test</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="billingTableBody">
+                                <!-- Rows will be added here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <button class="btn btn-secondary btn-small mt-20" onclick="addBillingRow()">
+                        <i class="fas fa-plus"></i> Add Test
+                    </button>
+                    <button class="btn btn-secondary btn-small mt-20" onclick="addConsultationFee()" style="margin-left: 10px;">
+                        <i class="fas fa-user-md"></i> Add Consultation
+                    </button>
+                    
+                    <button class="btn btn-primary btn-small mt-20" onclick="saveBilling()" style="margin-left: 10px;">
+                        <i class="fas fa-save"></i> Save
+                    </button>
+                </div>
+                
+                <!-- Billing Summary -->
+                <div id="billingSummary" class="billing-summary" style="display: none;">
+                    <h4 style="font-size: 14px; color: var(--primary-color); margin-bottom: 15px;">
+                        <i class="fas fa-calculator"></i> Billing Summary
+                    </h4>
+                    <div class="summary-row">
+                        <span>Subtotal:</span>
+                        <span id="subtotal">₹0.00</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Scheme:</span>
+                        <span id="schemeDisplay">-</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Discount:</span>
+                        <span id="discountAmount">₹0.00</span>
+                    </div>
+                    <div class="summary-row">
+                        <span><strong>Total Amount:</strong></span>
+                        <span id="totalAmount"><strong>₹0.00</strong></span>
+                    </div>
+                    
+                    <div class="form-group mt-20">
+                        <label class="form-label">
+                            <i class="fas fa-tag"></i> Select Scheme
+                        </label>
+                        <select class="form-select" id="schemeSelect" onchange="calculateTotal()">
+                            <option value="">Select Scheme</option>
+                            <option value="ayushman">Ayushman Bharat (PM-JAY) — 50% discount</option>
+                            <option value="cmhs">Chief Minister Health Scheme — 30% discount</option>
+                            <option value="general">General (0% discount)</option>
+                        </select>
+                    </div>
+                    
+                    <button class="btn btn-primary btn-block mt-20" onclick="downloadBilling()">
+                        <i class="fas fa-download"></i> Download Bill
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="../../assets/js/main.js"></script>
+    <script src="../../assets/js/billing.js"></script>
+    <script>
+        const userName = localStorage.getItem('receptionist_name') || 'User';
+        document.getElementById('userName').textContent = userName;
+    </script>
+</body>
+</html>
+

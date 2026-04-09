@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Portal - Login | Medixa</title>
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/portal-modern.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="portal-body">
+    <div class="portal-wrapper">
+        <a href="../../index.html" class="portal-back">
+            <i class="fas fa-arrow-left"></i> Back to Home
+        </a>
+        
+        <div class="portal-card">
+            <div class="portal-header">
+                <div class="portal-logo">
+                    <i class="fas fa-user-md"></i>
+                </div>
+                <h2 class="portal-title">Doctor Portal</h2>
+                <p class="portal-subtitle">Access your clinical dashboard and patient records.</p>
+            </div>
+            
+            <div id="message-container"></div>
+            
+            <form id="doctorLoginForm" class="portal-form">
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-envelope"></i> Professional Email
+                    </label>
+                    <input type="email" class="form-input" name="email" placeholder="doctor@medixa.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-lock"></i> Password
+                    </label>
+                    <input type="password" class="form-input" name="password" placeholder="••••••••" required>
+                </div>
+                
+                <button type="submit" class="portal-btn">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+            </form>
+            
+            <div class="portal-footer">
+                <p>Registration is managed by hospital administration.</p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="../../assets/js/main.js"></script>
+    <script src="../../assets/js/doctor.js"></script>
+</body>
+</html>
+

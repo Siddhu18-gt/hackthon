@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Page | Medixa</title>
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/portal-modern.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .doctor-page-wrapper {
+            background: white;
+            padding: 40px;
+            border-radius: 24px;
+            color: var(--portal-text-main);
+            max-width: 1000px;
+            margin: 0 auto;
+            box-shadow: var(--portal-shadow);
+            border: 1px solid var(--portal-border);
+        }
+        .patient-header {
+            background: #f8fafc;
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            border: 1px solid var(--portal-border);
+        }
+        .record-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+            margin: 20px 0;
+        }
+        .record-table th {
+            background: #f1f5f9;
+            color: var(--portal-text-sub);
+            padding: 12px 16px;
+            font-size: 12px;
+            font-weight: 700;
+            text-align: left;
+            text-transform: uppercase;
+            border: none;
+        }
+        .record-table td {
+            padding: 12px 16px;
+            background: #ffffff;
+            border-top: 1px solid var(--portal-border);
+            border-bottom: 1px solid var(--portal-border);
+        }
+        .record-table td:first-child {
+            border-left: 1px solid var(--portal-border);
+            border-top-left-radius: 12px;
+            border-bottom-left-radius: 12px;
+        }
+        .record-table td:last-child {
+            border-right: 1px solid var(--portal-border);
+            border-top-right-radius: 12px;
+            border-bottom-right-radius: 12px;
+        }
+        .record-table textarea, .record-table select {
+            width: 100%;
+            padding: 10px;
+            font-size: 13px;
+            border: 1.5px solid var(--portal-border);
+            border-radius: 8px;
+            background: #fcfdfe;
+            transition: all 0.2s;
+        }
+        .record-table textarea:focus, .record-table select:focus {
+            outline: none;
+            border-color: var(--portal-primary);
+            background: #fff;
+        }
+        .doctor-page-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid var(--portal-border);
+        }
+        .signature-box {
+            padding: 15px 25px;
+            background: #f1f5f9;
+            border-radius: 12px;
+            border-left: 4px solid var(--portal-primary);
+        }
+    </style>
+</head>
+<body style="background: #f1f5f9;">
+    <!-- Sidebar -->
+    <div class="sidebar" style="background: white; border-right: 1px solid var(--portal-border);">
+        <div class="sidebar-header" style="border-bottom: 1px solid var(--portal-border);">
+            <h3 style="color: var(--portal-primary-dark);"><i class="fas fa-hand-holding-medical"></i> Medixa</h3>
+        </div>
+        
+        <ul class="sidebar-nav" id="patientNavMenu">
+            <li><a href="dashboard.html">
+                <i class="fas fa-th-large"></i> Overview
+            </a></li>
+            <li><a href="patient-login.html">
+                <i class="fas fa-user-injured"></i> Patient Records
+            </a></li>
+            <li><a href="doctor-page.html" class="active" style="background: var(--portal-primary-light); color: var(--portal-primary-dark);">
+                <i class="fas fa-file-alt"></i> Doctor Page
+            </a></li>
+            <li><a href="patient-final-report.html">
+                <i class="fas fa-file-medical"></i> Final Report
+            </a></li>
+            <li><a href="test-report.html">
+                <i class="fas fa-vial"></i> Test Report
+            </a></li>
+            <li><a href="doctor-management.html">
+                <i class="fas fa-calendar-check"></i> Appointments
+            </a></li>
+        </ul>
+        
+        <div class="sidebar-footer" style="border-top: 1px solid var(--portal-border);">
+            <div class="sidebar-user">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                    <div style="width: 36px; height: 36px; background: var(--portal-primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <div>
+                        <div id="doctorName" style="font-weight: 700; color: var(--portal-text-main); font-size: 14px;">Doctor Name</div>
+                        <div style="font-size: 11px; color: var(--portal-text-sub);">Specialist</div>
+                    </div>
+                </div>
+            </div>
+            <a href="login.html" class="btn btn-secondary btn-block btn-small" style="justify-content: center;">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
+            </a>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content" style="padding: 40px;">
+        <a href="patient-login.html" class="portal-back" style="margin-bottom: 30px;">
+            <i class="fas fa-arrow-left"></i> Back to Patient Access
+        </a>
+        
+        <div class="doctor-page-wrapper">
+            <!-- Patient Header -->
+            <div class="patient-header">
+                <h3 style="font-size: 18px; font-weight: 800; color: var(--portal-text-main); margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-user-circle" style="color: var(--portal-primary);"></i> Clinical Case Record
+                </h3>
+                <div id="patientHeaderDetails"></div>
+            </div>
+            
+            <!-- Records -->
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h4 style="font-size: 16px; font-weight: 700; color: var(--portal-text-main);">
+                        <i class="fas fa-notes-medical" style="color: var(--portal-primary);"></i> Diagnosis & Treatment
+                    </h4>
+                    <div style="display: flex; gap: 12px;">
+                        <button class="portal-btn" style="margin-top: 0; padding: 8px 16px; font-size: 13px;" onclick="addRecord()">
+                            <i class="fas fa-plus"></i> Add Entry
+                        </button>
+                        <button class="portal-btn" style="margin-top: 0; padding: 8px 16px; font-size: 13px; background: #ef4444;" onclick="removeLastRecord()" id="removeRecordBtn" style="display: none;">
+                            <i class="fas fa-trash"></i> Delete Last
+                        </button>
+                    </div>
+                </div>
+                
+                <div style="overflow-x: auto;">
+                    <table class="record-table" id="recordTable">
+                        <thead>
+                            <tr>
+                                <th style="width: 15%;">Symptoms</th>
+                                <th style="width: 20%;">Cause</th>
+                                <th style="width: 25%;">Prescription</th>
+                                <th style="width: 20%;">Tests</th>
+                                <th style="width: 10%;">Nurse</th>
+                                <th style="width: 10%;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recordTableBody">
+                            <!-- Entries will appear here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Footer -->
+            <div class="doctor-page-footer">
+                <div class="signature-box">
+                    <div style="font-size: 11px; color: var(--portal-text-sub); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px;">Attending Physician</div>
+                    <strong id="doctorSignature" style="font-size: 16px; color: var(--portal-text-main);"></strong>
+                </div>
+                <div style="display: flex; gap: 12px;">
+                    <button class="portal-btn" style="margin-top: 0; background: #64748b;" onclick="saveDoctorPageData()">
+                        <i class="fas fa-save"></i> Save Progress
+                    </button>
+                    <button class="portal-btn" style="margin-top: 0;" onclick="summarizeReport()">
+                        <i class="fas fa-file-signature"></i> Final Summary
+                    </button>
+                    <button class="portal-btn" style="margin-top: 0; background: #0ea5e9;" onclick="dischargePatient()">
+                        <i class="fas fa-door-open"></i> Discharge
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+        
+        <div id="message-container" style="margin-top: 20px;"></div>
+    </div>
+    
+    <script src="../../assets/js/main.js"></script>
+    <script src="../../assets/js/doctor.js"></script>
+    <script>
+        const doctorName = localStorage.getItem('doctor_name') || 'Doctor';
+        const doctorSpecialization = localStorage.getItem('doctor_specialization') || '';
+        document.getElementById('doctorName').textContent = doctorName;
+        document.getElementById('doctorSignature').textContent = `${doctorName} - ${doctorSpecialization}`;
+        
+        let records = [];
+        let isAdmitted = false;
+        
+        // Load patient details
+        const currentPatient = localStorage.getItem('current_patient');
+        if (currentPatient) {
+            const patient = JSON.parse(currentPatient);
+            displayPatientHeader(patient);
+            // Load tests and medicines first, then load doctor page
+            loadTestsAndMedicines().then(() => {
+                loadDoctorPage(patient.id);
+            });
+        } else {
+            // Still load tests and medicines even if no patient
+            loadTestsAndMedicines();
+        }
+        
+        function displayPatientHeader(patient) {
+            const container = document.getElementById('patientHeaderDetails');
+            const photoPath = patient.photo_path ? `../../${patient.photo_path}` : null;
+            const photoHtml = photoPath ? `<img src="${photoPath}" alt="Patient Photo" class="patient-photo" style="width: 80px; height: 80px; margin-bottom: 10px;" onerror="this.style.display='none'">` : '';
+            
+            container.innerHTML = `
+                ${photoHtml}
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 11px;">
+                    <div><strong>Name:</strong> ${patient.name}</div>
+                    <div><strong>Aadhaar:</strong> ${formatAadhaar(patient.aadhaar_number)}</div>
+                    <div><strong>DOB:</strong> ${formatDate(patient.date_of_birth)}</div>
+                    <div><strong>Age:</strong> ${patient.age ? `${patient.age} years` : 'N/A'} | <strong>Gender:</strong> ${patient.gender || 'N/A'}</div>
+                    <div style="grid-column: 1 / -1;"><strong>Address:</strong> ${patient.address || 'N/A'}</div>
+                    ${patient.symptoms ? `<div style="grid-column: 1 / -1;"><strong>Symptoms:</strong> ${patient.symptoms}</div>` : ''}
+                </div>
+            `;
+        }
+        
+        async function loadDoctorPage(patientId) {
+            try {
+                const response = await fetch(`../../api/get_doctor_page.php?patient_id=${patientId}`);
+                const result = await response.json();
+                
+                // Ensure tests are loaded first to map test names to IDs
+                if (testsList.length === 0 || medicinesList.length === 0) {
+                    await loadTestsAndMedicines();
+                }
+                
+                if (result.success && result.records && result.records.length > 0) {
+                    records = result.records.map(r => {
+                        // Extract test IDs from test field (comma-separated test names)
+                        let test_ids = [];
+                        if (r.test && testsList.length > 0) {
+                            const testNames = r.test.split(', ').map(name => name.trim());
+                            test_ids = testsList
+                                .filter(test => testNames.includes(test.test_name))
+                                .map(test => test.id);
+                        }
+                        
+                        return {
+                            ...r,
+                            test_ids: test_ids
+                        };
+                    });
+                } else {
+                    // If no records, show empty table with one row
+                    records = [{
+                        id: Date.now(),
+                        symptoms: '',
+                        cause: '',
+                        prescription: '',
+                        test: '',
+                        test_ids: [],
+                        nurse_medicines: [],
+                        nurse_status: 'pending'
+                    }];
+                }
+                
+                renderRecords();
+                updateRemoveButton();
+            } catch (error) {
+                console.error('Error loading doctor page:', error);
+                showError('Failed to load doctor page data.');
+            }
+        }
+        
+        let testsList = [];
+        let medicinesList = [];
+        
+        // Load tests and medicines on page load
+        async function loadTestsAndMedicines() {
+            try {
+                const testsResponse = await fetch('../../api/get_tests.php');
+                if (!testsResponse.ok) {
+                    throw new Error(`HTTP error! status: ${testsResponse.status}`);
+                }
+                
+                const responseText = await testsResponse.text();
+                let testsData;
+                try {
+                    testsData = JSON.parse(responseText);
+                } catch (parseError) {
+                    console.error('Invalid JSON response from tests API:', responseText.substring(0, 200));
+                    throw new Error('Invalid response from server. Please check if database tables exist.');
+                }
+                if (testsData.success && testsData.tests && Array.isArray(testsData.tests)) {
+                    testsList = testsData.tests;
+                    console.log('Tests loaded:', testsList.length);
+                } else {
+                    console.error('Failed to load tests:', testsData);
+                    if (testsData.message) {
+                        console.warn('Tests API message:', testsData.message);
+                    }
+                    testsList = [];
+                }
+                
+                const medicinesResponse = await fetch('../../api/get_medicines.php');
+                if (!medicinesResponse.ok) {
+                    throw new Error(`HTTP error! status: ${medicinesResponse.status}`);
+                }
+                
+                const medicinesResponseText = await medicinesResponse.text();
+                let medicinesData;
+                try {
+                    medicinesData = JSON.parse(medicinesResponseText);
+                } catch (parseError) {
+                    console.error('Invalid JSON response from medicines API:', medicinesResponseText.substring(0, 200));
+                    throw new Error('Invalid response from server. Please check if database tables exist.');
+                }
+                if (medicinesData.success && medicinesData.medicines && Array.isArray(medicinesData.medicines)) {
+                    medicinesList = medicinesData.medicines;
+                    console.log('Medicines loaded:', medicinesList.length);
+                } else {
+                    console.error('Failed to load medicines:', medicinesData);
+                    if (medicinesData.message) {
+                        console.warn('Medicines API message:', medicinesData.message);
+                    }
+                    medicinesList = [];
+                }
+                
+                // Re-render records after loading tests and medicines
+                if (records.length > 0) {
+                    renderRecords();
+                }
+            } catch (error) {
+                console.error('Error loading tests/medicines:', error);
+                // Don't show error if it's just empty data
+                if (error.message && !error.message.includes('JSON')) {
+                    showError('Failed to load tests and medicines: ' + error.message);
+                }
+                testsList = [];
+                medicinesList = [];
+            }
+        }
+        
+        // Initialize on page load
+        loadTestsAndMedicines();
+        
+        function addRecord() {
+            const record = {
+                id: Date.now(),
+                symptoms: '',
+                cause: '',
+                prescription: '',
+                test: '',
+                test_ids: [],
+                nurse_medicines: [],
+                nurse_status: 'pending'
+            };
+            records.push(record);
+            renderRecords();
+            updateRemoveButton();
+        }
+        
+        function removeLastRecord() {
+            if (records.length > 0) {
+                records.pop();
+                renderRecords();
+                updateRemoveButton();
+            }
+        }
+        
+        function removeRecord(id) {
+            records = records.filter(r => r.id !== id);
+            renderRecords();
+            updateRemoveButton();
+        }
+        
+        function updateRemoveButton() {
+            const removeBtn = document.getElementById('removeRecordBtn');
+            if (removeBtn) {
+                removeBtn.style.display = records.length > 0 ? 'inline-block' : 'none';
+            }
+        }
+        
+        function renderRecords() {
+            const tbody = document.getElementById('recordTableBody');
+            tbody.innerHTML = '';
+            
+            records.forEach(record => {
+                const tr = document.createElement('tr');
+                
+                // Build symptoms cell (editable by doctor)
+                const symptomsCell = `
+                    <td>
+                        <div style="position: relative;">
+                            <textarea id="symptoms-${record.id}" onchange="updateRecord(${record.id}, 'symptoms', this.value)" 
+                                      placeholder="Symptoms">${record.symptoms || ''}</textarea>
+                            <button class="btn btn-secondary btn-small" onclick="startVoiceInput('symptoms-${record.id}')" 
+                                    style="position: absolute; right: 5px; top: 5px; padding: 4px 8px;" title="Voice Input">
+                                <i class="fas fa-microphone"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                
+                // Build cause cell with voice assistant
+                const causeCell = `
+                    <td>
+                        <div style="position: relative;">
+                            <textarea id="cause-${record.id}" onchange="updateRecord(${record.id}, 'cause', this.value)" 
+                                      placeholder="e.g., Stomach ache">${record.cause || ''}</textarea>
+                            <button class="btn btn-secondary btn-small" onclick="startVoiceInput('cause-${record.id}')" 
+                                    style="position: absolute; right: 5px; top: 5px; padding: 4px 8px;" title="Voice Input">
+                                <i class="fas fa-microphone"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                
+                // Build prescription cell with voice assistant
+                const prescriptionCell = `
+                    <td>
+                        <div style="position: relative;">
+                            <textarea id="prescription-${record.id}" onchange="updateRecord(${record.id}, 'prescription', this.value)" 
+                                      placeholder="e.g., Antacid">${record.prescription || ''}</textarea>
+                            <button class="btn btn-secondary btn-small" onclick="startVoiceInput('prescription-${record.id}')" 
+                                    style="position: absolute; right: 5px; top: 5px; padding: 4px 8px;" title="Voice Input">
+                                <i class="fas fa-microphone"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                
+                // Build test cell with styled dropdown - showing simple test names
+                const selectedTests = record.test_ids || [];
+                let testOptions = '';
+                if (testsList && testsList.length > 0) {
+                    // Priority tests to show first (simple names)
+                    const priorityTests = ['Blood', 'Urine', 'USG', 'ECG', 'X-Ray', 'CT Scan', 'MRI'];
+                    
+                    // Add priority tests first
+                    priorityTests.forEach(priorityName => {
+                        const test = testsList.find(t => t.test_name === priorityName);
+                        if (test) {
+                            testOptions += `<option value="${test.id}" ${selectedTests.includes(test.id) ? 'selected' : ''} 
+                                    data-cost="${test.cost}" data-dept="${test.department}">
+                                ${priorityName}
+                            </option>`;
+                        }
+                    });
+                    
+                    // Add other tests (not in priority list)
+                    testsList.forEach(test => {
+                        if (!priorityTests.includes(test.test_name)) {
+                            // Simplify test names for display
+                            let displayName = test.test_name;
+                            if (test.test_name.includes('Ultrasound')) {
+                                displayName = 'USG';
+                            } else if (test.test_name.includes('Chest X-Ray')) {
+                                displayName = 'Chest X-Ray';
+                            } else if (test.test_name.includes('Doppler')) {
+                                displayName = 'Doppler Scan';
+                            } else if (test.test_name.includes('Urine')) {
+                                displayName = test.test_name.replace('Urine ', '');
+                            }
+                            
+                            testOptions += `<option value="${test.id}" ${selectedTests.includes(test.id) ? 'selected' : ''} 
+                                    data-cost="${test.cost}" data-dept="${test.department}">
+                                ${displayName}
+                            </option>`;
+                        }
+                    });
+                } else {
+                    testOptions = '<option value="">No tests available. Please refresh.</option>';
+                }
+                
+                const selectedCount = selectedTests.length;
+                const testCell = `
+                    <td>
+                        <div class="test-select-wrapper">
+                            <select id="test-${record.id}" multiple onchange="updateTestSelection(${record.id})" 
+                                    class="test-multi-select">
+                                <option value="" disabled>Select Tests</option>
+                                ${testOptions}
+                            </select>
+                            <div class="test-select-info">
+                                <i class="fas fa-info-circle"></i>
+                                <span id="test-count-${record.id}">${selectedCount > 0 ? selectedCount + ' test(s) selected' : 'Hold Ctrl/Cmd to select multiple'}</span>
+                            </div>
+                        </div>
+                    </td>
+                `;
+                
+                // Build nurse cell with medicine dropdown
+                let medicineOptions = '';
+                if (medicinesList && medicinesList.length > 0) {
+                    medicineOptions = medicinesList.map(med => 
+                        `<option value="${med.medicine_name} ${med.dosage}">${med.medicine_name} - ${med.dosage}</option>`
+                    ).join('');
+                } else {
+                    medicineOptions = '<option value="">No medicines available. Please refresh.</option>';
+                }
+                const nurseCell = `
+                    <td>
+                        <div id="nurse-${record.id}">
+                            ${record.nurse_medicines ? record.nurse_medicines.map((med, idx) => `
+                                <div class="nurse-medicine-item">
+                                    <input type="text" value="${med}" readonly style="flex: 1;">
+                                    <button class="btn btn-secondary btn-small" onclick="removeNurseMedicine(${record.id}, ${idx})">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            `).join('') : ''}
+                            <select id="medicine-select-${record.id}" onchange="addNurseMedicineFromList(${record.id})" 
+                                    style="width: 100%; margin-top: 5px;">
+                                <option value="">Select Medicine</option>
+                                ${medicineOptions}
+                            </select>
+                        </div>
+                    </td>
+                `;
+                
+                // Build action cell
+                const actionCell = `
+                    <td>
+                        <span id="action-${record.id}" style="padding: 4px 8px; border-radius: 4px; font-size: 11px; 
+                            background: ${record.nurse_status === 'done' ? 'var(--success)' : 'var(--warning)'}; 
+                            color: white;">
+                            ${record.nurse_status === 'done' ? 'Done' : 'Pending'}
+                        </span>
+                    </td>
+                `;
+                
+                tr.innerHTML = symptomsCell + causeCell + prescriptionCell + testCell + nurseCell + actionCell;
+                tbody.appendChild(tr);
+            });
+            
+            updateRemoveButton();
+            
+            // Update test counts after rendering
+            setTimeout(() => {
+                records.forEach(record => {
+                    const countElement = document.getElementById(`test-count-${record.id}`);
+                    if (countElement && record.test_ids) {
+                        const count = record.test_ids.length;
+                        countElement.textContent = count > 0 ? `${count} test(s) selected` : 'Hold Ctrl/Cmd to select multiple';
+                    }
+                });
+            }, 100);
+        }
+        
+        // Voice input function
+        function startVoiceInput(elementId) {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                showError('Voice input not supported in this browser');
+                return;
+            }
+            
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'en-US';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            
+            const textarea = document.getElementById(elementId);
+            const recordId = parseInt(elementId.split('-')[1]);
+            
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                textarea.value = transcript;
+                
+                let field = 'cause';
+                if (elementId.startsWith('symptoms')) field = 'symptoms';
+                else if (elementId.startsWith('prescription')) field = 'prescription';
+                
+                updateRecord(recordId, field, transcript);
+                showSuccess('Voice input captured!');
+            };
+            
+            recognition.onerror = function(event) {
+                showError('Voice recognition error: ' + event.error);
+            };
+            
+            recognition.start();
+            showSuccess('Listening... Speak now.');
+        }
+        
+        // Update test selection
+        function updateTestSelection(recordId) {
+            const select = document.getElementById(`test-${recordId}`);
+            const selectedOptions = Array.from(select.selectedOptions);
+            const testIds = selectedOptions.map(opt => parseInt(opt.value)).filter(id => id);
+            // Get test names from the option text (now just the test name without cost)
+            const testNames = selectedOptions.map(opt => opt.textContent.trim()).filter(name => name);
+            
+            // Update test count display
+            const countElement = document.getElementById(`test-count-${recordId}`);
+            if (countElement) {
+                const count = testIds.length;
+                countElement.textContent = count > 0 ? `${count} test(s) selected` : 'Hold Ctrl/Cmd to select multiple';
+            }
+            
+            const record = records.find(r => r.id === recordId);
+            if (record) {
+                record.test_ids = testIds;
+                record.test = testNames.join(', ');
+                
+                // Auto-send to test department
+                sendTestsToDepartment(recordId, testIds);
+                
+                // Auto-send to billing
+                sendTestsToBilling(recordId, selectedOptions);
+            }
+        }
+        
+        // Send tests to test department
+        async function sendTestsToDepartment(recordId, testIds) {
+            if (testIds.length === 0) return;
+            
+            const patient = JSON.parse(localStorage.getItem('current_patient'));
+            if (!patient) return;
+            
+            try {
+                const selectedTests = testsList.filter(t => testIds.includes(t.id));
+                const response = await fetch('../../api/send_tests_to_department.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        patient_id: patient.id,
+                        tests: selectedTests
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    showSuccess('Tests sent to test departments!');
+                }
+            } catch (error) {
+                console.error('Error sending tests to department:', error);
+            }
+        }
+        
+        // Send tests to billing
+        async function sendTestsToBilling(recordId, selectedOptions) {
+            if (selectedOptions.length === 0) return;
+            
+            const patient = JSON.parse(localStorage.getItem('current_patient'));
+            if (!patient) return;
+            
+            try {
+                // Get test details from testsList using the option value (test ID)
+                const billingItems = selectedOptions.map(opt => {
+                    const testId = parseInt(opt.value);
+                    const test = testsList.find(t => t.id === testId);
+                    if (test) {
+                        return {
+                            test_name: test.test_name, // Use full test name from database
+                            amount: test.cost
+                        };
+                    }
+                    // Fallback if test not found
+                    return {
+                        test_name: opt.textContent.trim(),
+                        amount: parseFloat(opt.getAttribute('data-cost')) || 0
+                    };
+                });
+                
+                const response = await fetch('../../api/send_tests_to_billing.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        patient_id: patient.id,
+                        billing_items: billingItems
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    showSuccess('Tests added to billing!');
+                }
+            } catch (error) {
+                console.error('Error sending tests to billing:', error);
+            }
+        }
+        
+        // Add medicine from dropdown
+        function addNurseMedicineFromList(recordId) {
+            const select = document.getElementById(`medicine-select-${recordId}`);
+            const selectedMedicine = select.value;
+            
+            if (selectedMedicine) {
+                const record = records.find(r => r.id === recordId);
+                if (record) {
+                    if (!record.nurse_medicines) record.nurse_medicines = [];
+                    // Format: "Medicine Name - Dosage"
+                    record.nurse_medicines.push(selectedMedicine);
+                    renderRecords();
+                    
+                    // Auto-save to update nurse_instructions
+                    saveDoctorPage();
+                }
+                select.value = '';
+            }
+        }
+        
+        function updateRecord(id, field, value) {
+            const record = records.find(r => r.id === id);
+            if (record) {
+                record[field] = value;
+            }
+        }
+        
+        // Keep old function for backward compatibility
+        function addNurseMedicine(recordId) {
+            addNurseMedicineFromList(recordId);
+        }
+        
+        function removeNurseMedicine(recordId, index) {
+            const record = records.find(r => r.id === recordId);
+            if (record && record.nurse_medicines) {
+                record.nurse_medicines.splice(index, 1);
+                renderRecords();
+            }
+        }
+        
+        async function summarizeReport() {
+            const patient = JSON.parse(localStorage.getItem('current_patient'));
+            if (!patient) {
+                showError('Patient not found');
+                return;
+            }
+            
+            // Save doctor page first
+            await saveDoctorPage();
+            
+            // Create summary
+            const summary = createSummary();
+            const medicines = extractMedicines();
+            const aiSummary = generateAISummary(summary, medicines);
+            
+            try {
+                const response = await fetch('../../api/summarize_report.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        patient_id: patient.id,
+                        doctor_id: localStorage.getItem('doctor_id'),
+                        summary: summary,
+                        medicines: medicines,
+                        ai_summary: aiSummary
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showSuccess('Report summarized and sent to patient portal!');
+                } else {
+                    showError(result.message || 'Failed to summarize report');
+                }
+            } catch (error) {
+                showError('Network error. Please try again.');
+                console.error('Summarize error:', error);
+            }
+        }
+        
+        function generateAISummary(summary, medicines) {
+            // This is a simulated AI summary based on the doctor's clinical notes
+            const lines = summary.split('\n').filter(l => l.trim().length > 0);
+            const medList = medicines.split(',').map(m => m.trim()).filter(m => m.length > 0);
+            
+            let aiText = "### 🤖 AI Assistant Clinical Insights\n\n";
+            
+            if (lines.length <= 1) {
+                aiText += "Insufficient clinical data to generate a detailed AI insight. Please ensure symptoms and causes are documented.";
+                return aiText;
+            }
+
+            aiText += "**Diagnostic Overview:**\n";
+            aiText += "Based on the reported symptoms and clinical findings, the patient appears to be experiencing " + 
+                      (lines[1] ? lines[1].replace(/^\d+\.\s*/, '').toLowerCase() : "the documented conditions") + ". ";
+            
+            if (medList.length > 0) {
+                aiText += "\n\n**Treatment Rationale:**\n";
+                aiText += "The prescribed regimen including " + medList.slice(0, 2).join(' and ') + 
+                          " is targeted at addressing the primary underlying cause. ";
+            }
+
+            aiText += "\n\n**Prognosis & Recommendations:**\n";
+            aiText += "1. Complete the full course of prescribed medications.\n";
+            aiText += "2. Monitor for any worsening of symptoms or allergic reactions.\n";
+            aiText += "3. Maintain adequate hydration and rest for optimal recovery.\n";
+            
+            return aiText;
+        }
+        
+        function createSummary() {
+            // Convert medical terms to simple language
+            let summary = 'Patient visited with the following conditions:\n\n';
+            records.forEach((record, index) => {
+                if (record.cause) {
+                    summary += `${index + 1}. ${record.cause}\n`;
+                    if (record.prescription) {
+                        summary += `   Treatment: ${record.prescription}\n`;
+                    }
+                }
+            });
+            return summary;
+        }
+        
+        function extractMedicines() {
+            const medicines = [];
+            records.forEach(record => {
+                if (record.prescription) {
+                    medicines.push(record.prescription);
+                }
+                if (record.nurse_medicines) {
+                    medicines.push(...record.nurse_medicines);
+                }
+            });
+            return medicines.join(', ');
+        }
+        
+        async function saveDoctorPage() {
+            const patient = JSON.parse(localStorage.getItem('current_patient'));
+            if (!patient) {
+                showError('Patient not found');
+                return false;
+            }
+            
+            const doctorId = localStorage.getItem('doctor_id');
+            if (!doctorId) {
+                showError('Doctor ID not found. Please login again.');
+                return false;
+            }
+            
+            try {
+                const response = await fetch('../../api/save_doctor_page.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        patient_id: patient.id,
+                        doctor_id: doctorId,
+                        records: records
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const responseText = await response.text();
+                let result;
+                try {
+                    result = JSON.parse(responseText);
+                } catch (parseError) {
+                    console.error('Invalid JSON response:', responseText.substring(0, 200));
+                    throw new Error('Invalid response from server');
+                }
+                
+                if (!result.success) {
+                    console.error('Save error response:', result);
+                    showError(result.message || 'Failed to save');
+                }
+                return result.success;
+            } catch (error) {
+                console.error('Save error:', error);
+                showError('Network error: ' + error.message);
+                return false;
+            }
+        }
+        
+        async function saveDoctorPageData() {
+            if (records.length === 0) {
+                showError('No records to save. Please add at least one record.');
+                return;
+            }
+            
+            const success = await saveDoctorPage();
+            if (success) {
+                showSuccess('Doctor page data saved successfully!');
+                
+                // Send all selected tests to billing after save
+                const patient = JSON.parse(localStorage.getItem('current_patient'));
+                if (patient) {
+                    let allBillingItems = [];
+                    
+                    records.forEach(record => {
+                        if (record.test_ids && record.test_ids.length > 0) {
+                            const selectedTests = testsList.filter(t => record.test_ids.includes(t.id));
+                            selectedTests.forEach(test => {
+                                allBillingItems.push({
+                                    test_name: test.test_name,
+                                    amount: test.cost
+                                });
+                            });
+                        }
+                    });
+                    
+                    // Send all tests to billing at once
+                    if (allBillingItems.length > 0) {
+                        try {
+                            const response = await fetch('../../api/send_tests_to_billing.php', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    patient_id: patient.id,
+                                    billing_items: allBillingItems
+                                })
+                            });
+                            
+                            const result = await response.json();
+                            if (result.success) {
+                                showSuccess('Tests sent to billing successfully!');
+                            }
+                        } catch (error) {
+                            console.error('Error sending tests to billing:', error);
+                        }
+                    }
+                }
+            } else {
+                showError('Failed to save data. Please try again.');
+            }
+        }
+        
+        async function dischargePatient() {
+            if (!confirm('Are you sure you want to discharge this patient?')) {
+                return;
+            }
+            
+            await saveDoctorPage();
+            showSuccess('Patient discharged successfully!');
+        }
+    </script>
+</body>
+</html>
+

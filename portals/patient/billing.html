@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billing | Patient Portal</title>
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-user-injured"></i> Patient</h3>
+        </div>
+        
+        <ul class="sidebar-nav">
+            <li><a href="patient-report.html">
+                <i class="fas fa-file-medical"></i> Patient Report
+            </a></li>
+            <li><a href="billing.html" class="active">
+                <i class="fas fa-file-invoice-dollar"></i> Billing
+            </a></li>
+        </ul>
+        
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <strong id="patientName">Patient Name</strong>
+            </div>
+            <a href="login.html" class="btn btn-secondary btn-block btn-small">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
+            </a>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <a href="dashboard.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+        
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-file-invoice-dollar"></i> Billing Information
+            </div>
+            
+            <!-- Patient Details -->
+            <div class="patient-details-card">
+                <h4><i class="fas fa-user"></i> Patient Details</h4>
+                <div id="patientBillingDetails"></div>
+            </div>
+            
+            <hr style="border: 1px solid var(--border-color); margin: 20px 0;">
+            
+            <!-- Billing Table -->
+            <div>
+                <h4 style="font-size: 14px; color: var(--primary-color); margin-bottom: 15px;">
+                    <i class="fas fa-list"></i> Tests
+                </h4>
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Test</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="billingTableBody">
+                            <tr>
+                                <td colspan="3" style="text-align: center; color: var(--text-muted);">
+                                    Loading billing information...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Billing Summary -->
+            <div id="billingSummary" class="billing-summary" style="display: none;">
+                <h4 style="font-size: 14px; color: var(--primary-color); margin-bottom: 15px;">
+                    <i class="fas fa-calculator"></i> Billing Summary
+                </h4>
+                <div class="summary-row">
+                    <span>Subtotal:</span>
+                    <span id="subtotal">₹0.00</span>
+                </div>
+                <div class="summary-row">
+                    <span>Scheme:</span>
+                    <span id="schemeDisplay">-</span>
+                </div>
+                <div class="summary-row">
+                    <span>Discount:</span>
+                    <span id="discountAmount">₹0.00</span>
+                </div>
+                <div class="summary-row">
+                    <span><strong>Total Amount:</strong></span>
+                    <span id="totalAmount"><strong>₹0.00</strong></span>
+                </div>
+                
+                <button class="btn btn-primary btn-block mt-20" onclick="downloadBilling()">
+                    <i class="fas fa-download"></i> Download Bill
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="../../assets/js/main.js"></script>
+    <script>
+        const patient = JSON.parse(localStorage.getItem('current_patient') || '{}');
+        const patientName = patient.name || 'Patient';
+        document.getElementById('patientName').textContent = patientName;
+        
+        // Load billing information
+        loadBilling();
+        
+        async function loadBilling() {
+            if (!patient.id) {
+                showError('Patient not found');
+                return;
+            }
+            
+            // Display patient details (same format as receptionists portal)
+            const container = document.getElementById('patientBillingDetails');
+            const photoPath = patient.photo_path ? `../../${patient.photo_path}` : null;
+            const photoHtml = photoPath ? `<img src="${photoPath}" alt="Patient Photo" class="patient-photo" onerror="this.style.display='none'">` : '';
+            
+            container.innerHTML = `
+                ${photoHtml}
+                <div class="detail-row">
+                    <span class="detail-label">Name:</span>
+                    <span class="detail-value">${patient.name}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Aadhaar:</span>
+                    <span class="detail-value">${formatAadhaar(patient.aadhaar_number)}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Date of Birth:</span>
+                    <span class="detail-value">${formatDate(patient.date_of_birth)}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Age:</span>
+                    <span class="detail-value">${patient.age ? `${patient.age} years` : 'N/A'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Gender:</span>
+                    <span class="detail-value">${patient.gender || 'N/A'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Address:</span>
+                    <span class="detail-value">${patient.address || 'N/A'}</span>
+                </div>
+                ${patient.cause ? `
+                <div class="detail-row">
+                    <span class="detail-label">Cause:</span>
+                    <span class="detail-value">${patient.cause}</span>
+                </div>
+                ` : ''}
+            `;
+            
+            // Load billing data
+            try {
+                const response = await fetch(`../../api/get_patient_billing.php`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ aadhaar: patient.aadhaar_number })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success && result.billing && result.billing.length > 0) {
+                    const tbody = document.getElementById('billingTableBody');
+                    tbody.innerHTML = '';
+                    
+                    let subtotal = 0;
+                    let scheme = patient.scheme || '';
+                    let discountPercentage = parseFloat(patient.scheme_discount) || 0;
+                    
+                    result.billing.forEach(item => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${item.test_name}</td>
+                            <td>₹${parseFloat(item.amount).toFixed(2)}</td>
+                            <td>
+                                <span style="padding: 4px 8px; border-radius: 4px; font-size: 11px; 
+                                    background: ${item.status === 'paid' ? 'var(--success)' : 'var(--warning)'}; 
+                                    color: white;">
+                                    ${item.status}
+                                </span>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                        
+                        subtotal += parseFloat(item.amount);
+                        if (!scheme && item.scheme) {
+                            scheme = item.scheme;
+                        }
+                        if (discountPercentage === 0) {
+                            discountPercentage = parseFloat(item.discount_percentage) || discountPercentage;
+                        }
+                    });
+                    
+                    const discountAmount = (subtotal * discountPercentage) / 100;
+                    const totalAmount = subtotal - discountAmount;
+                    
+                    document.getElementById('subtotal').textContent = `₹${subtotal.toFixed(2)}`;
+                    document.getElementById('schemeDisplay').textContent = scheme ? `${scheme} (${discountPercentage}%)` : '-';
+                    document.getElementById('discountAmount').textContent = `₹${discountAmount.toFixed(2)}`;
+                    document.getElementById('totalAmount').innerHTML = `<strong>₹${totalAmount.toFixed(2)}</strong>`;
+                    
+                    document.getElementById('billingSummary').style.display = 'block';
+                } else {
+                    document.getElementById('billingTableBody').innerHTML = `
+                        <tr>
+                            <td colspan="3" style="text-align: center; color: var(--text-muted);">
+                                No billing information available
+                            </td>
+                        </tr>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading billing:', error);
+                showError('Failed to load billing information');
+            }
+        }
+        
+        function downloadBilling() {
+            const patient = JSON.parse(localStorage.getItem('current_patient') || '{}');
+            const subtotal = document.getElementById('subtotal').textContent;
+            const scheme = document.getElementById('schemeDisplay').textContent;
+            const discount = document.getElementById('discountAmount').textContent;
+            const total = document.getElementById('totalAmount').textContent;
+            
+            const tableRows = Array.from(document.querySelectorAll('#billingTableBody tr')).map(tr => {
+                const cells = tr.querySelectorAll('td');
+                return {
+                    test: cells[0].textContent,
+                    amount: cells[1].textContent,
+                    status: cells[2].textContent
+                };
+            });
+            
+            const content = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Billing Report - ${patient.name}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; }
+                        h2 { color: #00e6ac; }
+                        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                        th { background-color: #00e6ac; color: white; }
+                        .summary { margin-top: 20px; }
+                        .total { font-weight: bold; font-size: 18px; }
+                    </style>
+                </head>
+                <body>
+                    <h2>Medixa Healthcare - Billing Report</h2>
+                    <h3>Patient Details</h3>
+                    <p><strong>Name:</strong> ${patient.name}</p>
+                    <p><strong>Aadhaar:</strong> ${formatAadhaar(patient.aadhaar_number)}</p>
+                    <p><strong>Age:</strong> ${patient.age ? `${patient.age} years` : 'N/A'} | <strong>Gender:</strong> ${patient.gender || 'N/A'}</p>
+                    <p><strong>Address:</strong> ${patient.address || 'N/A'}</p>
+                    ${patient.cause ? `<p><strong>Cause:</strong> ${patient.cause}</p>` : ''}
+                    
+                    <hr>
+                    
+                    <h3>Tests</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Test</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${tableRows.map(row => `
+                                <tr>
+                                    <td>${row.test}</td>
+                                    <td>${row.amount}</td>
+                                    <td>${row.status}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    
+                    <div class="summary">
+                        <p>Subtotal: ${subtotal}</p>
+                        <p>Scheme: ${scheme}</p>
+                        <p>Discount: ${discount}</p>
+                        <p class="total">Total Amount: ${total}</p>
+                    </div>
+                    
+                    <p style="margin-top: 30px;"><em>Generated on ${new Date().toLocaleString()}</em></p>
+                </body>
+                </html>
+            `;
+            
+            // Create a blob and download as HTML file
+            const blob = new Blob([content], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Billing_${patient.name}_${Date.now()}.html`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            // Also open in new window for printing
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(content);
+            printWindow.document.close();
+        }
+    </script>
+</body>
+</html>
+

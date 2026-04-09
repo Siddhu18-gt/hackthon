@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Patient Management | Medixa</title>
+    <link rel="stylesheet" href="../../assets/css/style.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-shield-alt"></i> Receptionists</h3>
+        </div>
+        
+        <ul class="sidebar-nav">
+            <li><a href="patient-management.html" class="active">
+                <i class="fas fa-users"></i> Patient Management
+            </a></li>
+            <li><a href="doctor-management.html">
+                <i class="fas fa-user-md"></i> Doctor Management
+            </a></li>
+            <li><a href="nurse-management.html">
+                <i class="fas fa-user-nurse"></i> Nurse Management
+            </a></li>
+            <li><a href="billing.html">
+                <i class="fas fa-file-invoice-dollar"></i> Billing
+            </a></li>
+        </ul>
+        
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <strong id="userName">User Name</strong>
+            </div>
+            <a href="login.html" class="btn btn-secondary btn-block btn-small">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
+            </a>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <a href="dashboard.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+        
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-users"></i> Patient Management
+            </div>
+            
+            <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                <button class="btn btn-primary" onclick="showLoginForm()">
+                    <i class="fas fa-sign-in-alt"></i> Patient Login
+                </button>
+                <button class="btn btn-primary" onclick="showRegisterForm()">
+                    <i class="fas fa-user-plus"></i> Patient Registration
+                </button>
+            </div>
+            
+            <div id="message-container"></div>
+            
+            <!-- Patient Login Form -->
+            <div id="loginFormContainer" style="display: none;">
+                <h3 style="font-size: 16px; color: var(--primary-color); margin-bottom: 15px;">
+                    <i class="fas fa-sign-in-alt"></i> Patient Login
+                </h3>
+                <form id="patientLoginForm">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-id-card"></i> Aadhaar Number
+                        </label>
+                        <input type="text" class="form-input" name="aadhaar" 
+                               data-aadhaar="true" placeholder="XXXX XXXX XXXX" maxlength="14" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Patient Registration Form -->
+            <div id="registerFormContainer" style="display: none;">
+                <h3 style="font-size: 16px; color: var(--primary-color); margin-bottom: 15px;">
+                    <i class="fas fa-user-plus"></i> Patient Registration
+                </h3>
+                <form id="patientRegisterForm">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-id-card"></i> Aadhaar Number
+                        </label>
+                        <input type="text" class="form-input" name="aadhaar" id="aadhaarInput"
+                               data-aadhaar="true" placeholder="XXXX XXXX XXXX" maxlength="14" required
+                               onblur="autoFetchAadhaarDetails()">
+                        <p style="font-size: 11px; color: var(--text-muted); margin-top: 5px;">
+                            <i class="fas fa-info-circle"></i> Patient details will be fetched automatically when you enter a valid 12-digit Aadhaar number
+                        </p>
+                    </div>
+                    
+                    <!-- OTP Verification Section -->
+                    <div id="otpContainer" style="display: none;">
+                        <div class="patient-details-card" style="background: rgba(0, 230, 172, 0.1); border: 2px solid var(--primary-color);">
+                            <h4><i class="fas fa-key"></i> OTP Verification</h4>
+                            <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 15px;" id="otpMessage">
+                                OTP has been sent to your Aadhaar linked mobile number. Please enter the OTP to continue registration.
+                            </p>
+                            <p style="font-size: 11px; color: var(--primary-color); margin-bottom: 15px; font-weight: 600;" id="mobileNumberDisplay">
+                                <i class="fas fa-mobile-alt"></i> Mobile: Loading...
+                            </p>
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-lock"></i> Enter OTP
+                                </label>
+                                <div style="display: flex; gap: 10px; align-items: center;">
+                                    <input type="text" class="form-input" id="otpInput" 
+                                           placeholder="Enter 6-digit OTP" maxlength="6" 
+                                           style="font-size: 18px; letter-spacing: 5px; text-align: center; font-weight: bold;">
+                                    <div style="padding: 10px 15px; background: var(--bg-dark); border-radius: 6px; border: 1px solid var(--primary-color);">
+                                        <strong style="color: var(--primary-color); font-size: 16px;" id="demoOTP">413256</strong>
+                                    </div>
+                                </div>
+                                <p style="font-size: 11px; color: var(--text-muted); margin-top: 5px;">
+                                    <i class="fas fa-info-circle"></i> Demo OTP: <strong>413256</strong>
+                                </p>
+                                <button type="button" class="btn btn-primary btn-block mt-20" onclick="verifyOTP()">
+                                    <i class="fas fa-check"></i> Verify OTP
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="patientDetailsContainer" style="display: none;">
+                        <div class="patient-details-card">
+                            <h4><i class="fas fa-user"></i> Patient Details</h4>
+
+                            <!-- Name -->
+                            <div class="form-group">
+                                <label class="form-label"><i class="fas fa-user"></i> Name</label>
+                                <input type="text" class="form-input" name="name">
+                            </div>
+
+                            <!-- Date of Birth -->
+                            <div class="form-group">
+                                <label class="form-label"><i class="fas fa-calendar"></i> Date of Birth</label>
+                                <input type="date" class="form-input" name="date_of_birth">
+                            </div>
+
+                            <!-- Age -->
+                            <div class="form-group">
+                                <label class="form-label"><i class="fas fa-birthday-cake"></i> Age</label>
+                                <input type="number" class="form-input" name="age">
+                            </div>
+
+                            <!-- Gender -->
+                            <div class="form-group">
+                                <label class="form-label"><i class="fas fa-venus-mars"></i> Gender</label>
+                                <input type="text" class="form-input" name="gender">
+                            </div>
+
+                            <!-- Address -->
+                            <div class="form-group">
+                                <label class="form-label"><i class="fas fa-map-marker-alt"></i> Address</label>
+                                <textarea class="form-input" name="address" rows="3"></textarea>
+                            </div>
+
+                            <!-- Mobile Number (editable if needed) -->
+                            <div class="form-group">
+                                <label class="form-label"><i class="fas fa-mobile-alt"></i> Mobile Number</label>
+                                <input type="tel" class="form-input" name="mobile" id="mobileInput" placeholder="Enter mobile number" maxlength="10" required>
+                                <p style="font-size:11px; color:var(--text-muted); margin-top:5px;">
+                                    <i class="fas fa-info-circle"></i> Mobile will be prefilled from Aadhaar if available. Edit if needed.
+                                </p>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label"><i class="fas fa-envelope"></i> Patient Email</label>
+                                <input type="email" class="form-input" name="email" id="patientEmailInput" placeholder="patient@example.com" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label"><i class="fas fa-lock"></i> Password</label>
+                                <input type="password" class="form-input" name="password" id="patientPasswordInput" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label"><i class="fas fa-lock"></i> Confirm Password</label>
+                                <input type="password" class="form-input" name="confirm_password" id="patientConfirmPasswordInput" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label"><i class="fas fa-hospital-user"></i> Assigned Department</label>
+                                <select class="form-select" name="specialization" id="specializationSelect" required>
+                                    <option value="">Select Department</option>
+                                    <option value="Cardiology">Cardiology</option>
+                                    <option value="Neurology">Neurology</option>
+                                    <option value="Orthopedics">Orthopedics</option>
+                                    <option value="Pediatrics">Pediatrics</option>
+                                    <option value="Dermatology">Dermatology</option>
+                                    <option value="Ophthalmology">Ophthalmology</option>
+                                    <option value="ENT">ENT</option>
+                                    <option value="General Medicine">General Medicine</option>
+                                    <option value="Gynecology">Gynecology</option>
+                                    <option value="Psychiatry">Psychiatry</option>
+                                </select>
+                            </div>
+
+                            <!-- Schemes -->
+                            <div class="form-group">
+                                <label class="form-label"><i class="fas fa-hand-holding-medical"></i> Apply Scheme</label>
+                                <select class="form-select" name="scheme" id="schemeSelect">
+                                    <option value="">No scheme</option>
+                                    <option value="ayushman" data-discount="50">Ayushman Bharat (PM-JAY) — 50% discount</option>
+                                    <option value="cmhs" data-discount="30">Chief Minister Health Scheme — 30% discount</option>
+                                </select>
+                                <p id="schemeInfo" style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">
+                                    <i class="fas fa-info-circle"></i> Selected scheme discount: <strong id="schemeDiscount">0%</strong>
+                                </p>
+                            </div>
+
+                            <input type="hidden" name="scheme_discount" id="schemeDiscountInput" value="0" />
+
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <i class="fas fa-save"></i> Register Patient
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Patient Details Display (After Login) -->
+            <div id="patientDetailsDisplay" style="display: none;">
+                <div class="patient-details-card">
+                    <h4><i class="fas fa-user"></i> Patient Information</h4>
+                    <div id="patientInfoContent"></div>
+                    
+                    <div style="margin-top: 20px;">
+                        <h4 style="font-size: 14px; color: var(--primary-color); margin-bottom: 10px;">
+                            <i class="fas fa-clipboard-list"></i> Options
+                        </h4>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-primary" onclick="viewFinalReport()">
+                                <i class="fas fa-file-medical"></i> Final Report
+                            </button>
+                            <button class="btn btn-primary" onclick="viewDoctorPage()">
+                                <i class="fas fa-file-alt"></i> Doctor Page
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../assets/js/main.js"></script>
+    <script src="../../assets/js/restricted.js"></script>
+    <script>
+        const userName = localStorage.getItem('receptionist_name') || 'User';
+        document.getElementById('userName').textContent = userName;
+
+        function showLoginForm() {
+            document.getElementById('loginFormContainer').style.display = 'block';
+            document.getElementById('registerFormContainer').style.display = 'none';
+            document.getElementById('patientDetailsDisplay').style.display = 'none';
+        }
+
+        function showRegisterForm() {
+            document.getElementById('loginFormContainer').style.display = 'none';
+            document.getElementById('registerFormContainer').style.display = 'block';
+            document.getElementById('patientDetailsDisplay').style.display = 'none';
+        }
+
+        function viewFinalReport() {
+            window.location.href = 'patient-final-report.html';
+        }
+
+        function viewDoctorPage() {
+            window.location.href = 'patient-doctor-page.html';
+        }
+
+        const schemeSelect = document.getElementById('schemeSelect');
+        const schemeDiscountDisplay = document.getElementById('schemeDiscount');
+        const schemeDiscountInput = document.getElementById('schemeDiscountInput');
+
+        if (schemeSelect) {
+            schemeSelect.addEventListener('change', function() {
+                const selected = this.options[this.selectedIndex];
+                const discount = selected.getAttribute('data-discount') || '0';
+                schemeDiscountDisplay.textContent = discount + '%';
+                schemeDiscountInput.value = discount;
+            });
+        }
+    </script>
+</body>
+</html>

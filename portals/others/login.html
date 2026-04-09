@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Others Portal - Login | Medixa</title>
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="form-container">
+        <a href="../../index.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Home
+        </a>
+        
+        <h2 class="form-title">
+            <i class="fas fa-flask"></i> Others Portal
+        </h2>
+        
+        <div style="text-align: center; margin-bottom: 20px;">
+            <button class="btn btn-primary" onclick="showTestLogin()" style="margin-right: 10px;">
+                <i class="fas fa-vial"></i> Test Department
+            </button>
+            <button class="btn btn-primary" onclick="showNurseLogin()">
+                <i class="fas fa-user-nurse"></i> Nurse
+            </button>
+        </div>
+        
+        <div id="message-container"></div>
+        
+        <!-- Test Department Login -->
+        <div id="testLoginForm" style="display: none;">
+            <form id="testLoginFormSubmit">
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-envelope"></i> Email
+                    </label>
+                    <input type="email" class="form-input" name="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-lock"></i> Password
+                    </label>
+                    <input type="password" class="form-input" name="password" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-sign-in-alt"></i> Login (Test Department)
+                </button>
+            </form>
+        </div>
+        
+        <!-- Nurse Login -->
+        <div id="nurseLoginForm" style="display: none;">
+            <form id="nurseLoginFormSubmit">
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-envelope"></i> Email
+                    </label>
+                    <input type="email" class="form-input" name="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-lock"></i> Password
+                    </label>
+                    <input type="password" class="form-input" name="password" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-sign-in-alt"></i> Login (Nurse)
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <script src="../../assets/js/main.js"></script>
+    <script src="../../assets/js/others.js"></script>
+    <script>
+        function showTestLogin() {
+            document.getElementById('testLoginForm').style.display = 'block';
+            document.getElementById('nurseLoginForm').style.display = 'none';
+        }
+        
+        function showNurseLogin() {
+            document.getElementById('testLoginForm').style.display = 'none';
+            document.getElementById('nurseLoginForm').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
+

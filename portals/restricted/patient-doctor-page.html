@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Page - Receptionists View | Medixa</title>
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .doctor-page-wrapper {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .patient-header {
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        .record-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .record-table th {
+            background: var(--primary-color);
+            color: white;
+            padding: 10px;
+            font-size: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        .record-table td {
+            padding: 8px;
+            border: 1px solid #ddd;
+        }
+        .record-table input,
+        .record-table textarea,
+        .record-table select {
+            width: 100%;
+            padding: 6px;
+            font-size: 11px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: 'Inter', sans-serif;
+        }
+        .record-table textarea {
+            resize: vertical;
+            min-height: 50px;
+        }
+        .doctor-page-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-shield-alt"></i> Receptionists</h3>
+        </div>
+        
+        <ul class="sidebar-nav">
+            <li><a href="patient-management.html">
+                <i class="fas fa-users"></i> Patient Management
+            </a></li>
+            <li><a href="doctor-management.html">
+                <i class="fas fa-user-md"></i> Doctor Management
+            </a></li>
+            <li><a href="nurse-management.html">
+                <i class="fas fa-user-nurse"></i> Nurse Management
+            </a></li>
+            <li><a href="billing.html">
+                <i class="fas fa-file-invoice-dollar"></i> Billing
+            </a></li>
+        </ul>
+        
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <strong id="userName">User Name</strong>
+            </div>
+            <a href="login.html" class="btn btn-secondary btn-block btn-small">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
+            </a>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <a href="patient-management.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+        
+        <div class="doctor-page-wrapper">
+            <!-- Patient Details (1/4 A4) -->
+            <div class="patient-header">
+                <h3 style="color: var(--primary-color); margin-bottom: 15px;">
+                    <i class="fas fa-user"></i> Patient Details
+                </h3>
+                <div id="patientHeaderDetails"></div>
+            </div>
+            
+            <hr style="border: 1px solid #ddd; margin: 20px 0;">
+            
+            <!-- Record Table -->
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h4 style="color: var(--primary-color);">
+                        <i class="fas fa-clipboard-list"></i> Medical Records
+                    </h4>
+                    <button class="btn btn-primary btn-small" onclick="addRecord()">
+                        <i class="fas fa-plus"></i> Add Record
+                    </button>
+                </div>
+                
+                <table class="record-table" id="recordTable">
+                    <thead>
+                        <tr>
+                            <th>Symptoms</th>
+                            <th>Cause</th>
+                            <th>Prescription</th>
+                            <th>Test</th>
+                            <th>Nurse</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recordTableBody">
+                        <!-- Records will be added here -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Footer -->
+            <div class="doctor-page-footer">
+                <div>
+                    <strong>Receptionist View</strong>
+                </div>
+                <div>
+                    <button class="btn btn-primary" onclick="saveSymptoms()">
+                        <i class="fas fa-save"></i> Save Symptoms
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="message-container" style="margin-top: 20px;"></div>
+    </div>
+    
+    <script src="../../assets/js/main.js"></script>
+    <script src="../../assets/js/restricted.js"></script>
+    <script>
+        const userName = localStorage.getItem('receptionist_name') || 'User';
+        document.getElementById('userName').textContent = userName;
+        
+        let records = [];
+        let currentPatient = null;
+        
+        // Load patient details
+        const storedPatient = localStorage.getItem('current_patient');
+        if (storedPatient) {
+            currentPatient = JSON.parse(storedPatient);
+            displayPatientHeader(currentPatient);
+            loadDoctorPage(currentPatient.id);
+        }
+        
+        function displayPatientHeader(patient) {
+            const container = document.getElementById('patientHeaderDetails');
+            container.innerHTML = `
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 11px;">
+                    <div><strong>Name:</strong> ${patient.name}</div>
+                    <div><strong>Aadhaar:</strong> ${formatAadhaar(patient.aadhaar_number)}</div>
+                    <div><strong>DOB:</strong> ${formatDate(patient.date_of_birth)}</div>
+                    <div><strong>Age:</strong> ${patient.age ? `${patient.age} years` : 'N/A'} | <strong>Gender:</strong> ${patient.gender || 'N/A'}</div>
+                    <div style="grid-column: 1 / -1;"><strong>Address:</strong> ${patient.address || 'N/A'}</div>
+                </div>
+            `;
+        }
+        
+        async function loadDoctorPage(patientId) {
+            try {
+                const response = await fetch(`../../api/get_doctor_page.php?patient_id=${patientId}`);
+                const result = await response.json();
+                
+                if (result.success && result.records) {
+                    records = result.records;
+                    renderRecords();
+                } else {
+                    // If no records, show empty table with one row for symptoms
+                    records = [{
+                        id: Date.now(),
+                        symptoms: '',
+                        cause: '',
+                        prescription: '',
+                        test: '',
+                        nurse_medicines: []
+                    }];
+                    renderRecords();
+                }
+            } catch (error) {
+                console.error('Error loading doctor page:', error);
+            }
+        }
+        
+        function renderRecords() {
+            const tbody = document.getElementById('recordTableBody');
+            tbody.innerHTML = '';
+            
+            records.forEach(record => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <textarea onchange="updateRecord(${record.id}, 'symptoms', this.value)" 
+                                  placeholder="Enter symptoms (Receptionist only)">${record.symptoms || ''}</textarea>
+                    </td>
+                    <td>
+                        <textarea readonly placeholder="Cause (Doctor only)">${record.cause || ''}</textarea>
+                    </td>
+                    <td>
+                        <textarea readonly placeholder="Prescription (Doctor only)">${record.prescription || ''}</textarea>
+                    </td>
+                    <td>
+                        <input type="text" readonly value="${record.test || ''}" placeholder="Tests (Doctor only)">
+                    </td>
+                    <td>
+                        <div id="nurse-${record.id}">
+                            ${record.nurse_medicines ? record.nurse_medicines.map((med, idx) => `
+                                <div class="nurse-medicine-item">
+                                    <input type="text" value="${med}" readonly style="flex: 1;">
+                                </div>
+                            `).join('') : ''}
+                        </div>
+                    </td>
+                    <td>
+                        <span style="padding: 4px 8px; border-radius: 4px; font-size: 11px; 
+                            background: ${record.nurse_status === 'done' ? 'var(--success)' : 'var(--warning)'}; 
+                            color: white;">
+                            ${record.nurse_status === 'done' ? 'Done' : 'Pending'}
+                        </span>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+        
+        function addRecord() {
+            const record = {
+                id: Date.now(),
+                symptoms: '',
+                cause: '',
+                prescription: '',
+                test: '',
+                nurse_medicines: [],
+                nurse_status: 'pending'
+            };
+            records.push(record);
+            renderRecords();
+        }
+        
+        function updateRecord(id, field, value) {
+            const record = records.find(r => r.id === id);
+            if (record) {
+                record[field] = value;
+            }
+        }
+        
+        async function saveSymptoms() {
+            if (!currentPatient) {
+                showError('Patient not found');
+                return;
+            }
+            
+            if (records.length === 0) {
+                showError('No records to save');
+                return;
+            }
+            
+            try {
+                const response = await fetch('../../api/save_symptoms.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        patient_id: currentPatient.id,
+                        records: records
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showSuccess('Symptoms saved successfully! They will be visible in doctor portal.');
+                } else {
+                    showError(result.message || 'Failed to save symptoms');
+                }
+            } catch (error) {
+                showError('Network error: ' + error.message);
+                console.error('Save symptoms error:', error);
+            }
+        }
+    </script>
+</body>
+</html>
+

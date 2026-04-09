@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Login | Nurse Portal</title>
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-user-nurse"></i> Nurse</h3>
+        </div>
+        
+        <ul class="sidebar-nav">
+            <li><a href="nurse-patient-login.html" class="active">
+                <i class="fas fa-user-injured"></i> Patient Login
+            </a></li>
+        </ul>
+        
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <strong id="nurseName">Nurse Name</strong>
+            </div>
+            <a href="login.html" class="btn btn-secondary btn-block btn-small">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
+            </a>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <a href="nurse-dashboard.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+        
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-user-injured"></i> Patient Login
+            </div>
+            
+            <div id="message-container"></div>
+            
+            <form id="nursePatientLoginForm">
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-id-card"></i> Aadhaar Number
+                    </label>
+                    <input type="text" class="form-input" name="aadhaar" 
+                           data-aadhaar="true" placeholder="XXXX XXXX XXXX" maxlength="14" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+            </form>
+            
+            <!-- Prescriptions Display -->
+            <div id="prescriptionsDisplay" style="display: none; margin-top: 30px;">
+                <h4 style="font-size: 14px; color: var(--primary-color); margin-bottom: 15px;">
+                    <i class="fas fa-pills"></i> Doctor Prescriptions
+                </h4>
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Medicine</th>
+                                <th>Dosage</th>
+                                <th>Given</th>
+                            </tr>
+                        </thead>
+                        <tbody id="prescriptionsTable">
+                            <!-- Prescriptions will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="../../assets/js/main.js"></script>
+    <script src="../../assets/js/others.js"></script>
+    <script>
+        const nurseName = localStorage.getItem('nurse_name') || 'Nurse';
+        document.getElementById('nurseName').textContent = nurseName;
+        
+        // Load prescriptions if patient is already logged in
+        const currentPatient = localStorage.getItem('nurse_current_patient');
+        if (currentPatient) {
+            loadPrescriptions(JSON.parse(currentPatient).id);
+        }
+        
+        async function loadPrescriptions(patientId) {
+            try {
+                const response = await fetch(`../../api/get_nurse_prescriptions.php?patient_id=${patientId}`);
+                const result = await response.json();
+                
+                const tbody = document.getElementById('prescriptionsTable');
+                tbody.innerHTML = '';
+                
+                if (result.success && result.prescriptions && result.prescriptions.length > 0) {
+                    result.prescriptions.forEach(prescription => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${prescription.medicine_name}</td>
+                            <td>${prescription.dosage}</td>
+                            <td>
+                                <select class="form-select" onchange="updateMedicineStatus(${prescription.id}, this.value === 'done')" 
+                                        style="width: 100px;">
+                                    <option value="pending" ${!prescription.given_status ? 'selected' : ''}>Pending</option>
+                                    <option value="done" ${prescription.given_status ? 'selected' : ''}>Done</option>
+                                </select>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                    document.getElementById('prescriptionsDisplay').style.display = 'block';
+                } else {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="3" style="text-align: center; color: var(--text-muted);">
+                                No prescriptions available for this patient
+                            </td>
+                        </tr>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading prescriptions:', error);
+            }
+        }
+        
+        async function updateMedicineStatus(prescriptionId, given) {
+            try {
+                const response = await fetch('../../api/update_medicine_status.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        prescription_id: prescriptionId,
+                        given_status: given,
+                        nurse_id: localStorage.getItem('nurse_id')
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showSuccess(given ? 'Medicine marked as given' : 'Medicine marked as not given');
+                } else {
+                    showError('Failed to update status');
+                }
+            } catch (error) {
+                showError('Network error. Please try again.');
+                console.error('Update error:', error);
+            }
+        }
+    </script>
+</body>
+</html>
+
